@@ -21,7 +21,7 @@
 -- Lists all stacks that are importing an exported output value. To modify or remove an exported output value, first use this action to see which stacks are using it. To see the exported output values in your account, see 'ListExports' .
 --
 --
--- For more information about importing an exported output value, see the <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html @Fn::ImportValue@ > function.
+-- For more information about importing an exported output value, see the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html @Fn::ImportValue@ > function.
 --
 --
 -- This operation returns paginated results.
@@ -52,10 +52,12 @@ import Network.AWS.Request
 import Network.AWS.Response
 
 -- | /See:/ 'listImports' smart constructor.
-data ListImports = ListImports'
-  { _liNextToken  :: !(Maybe Text)
-  , _liExportName :: !Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ListImports =
+  ListImports'
+    { _liNextToken  :: !(Maybe Text)
+    , _liExportName :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ListImports' with the minimum fields required to make a request.
@@ -118,11 +120,13 @@ instance ToQuery ListImports where
                "ExportName" =: _liExportName]
 
 -- | /See:/ 'listImportsResponse' smart constructor.
-data ListImportsResponse = ListImportsResponse'
-  { _lirsImports        :: !(Maybe [Text])
-  , _lirsNextToken      :: !(Maybe Text)
-  , _lirsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ListImportsResponse =
+  ListImportsResponse'
+    { _lirsImports        :: !(Maybe [Text])
+    , _lirsNextToken      :: !(Maybe Text)
+    , _lirsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ListImportsResponse' with the minimum fields required to make a request.

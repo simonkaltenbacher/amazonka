@@ -26,14 +26,16 @@ import Network.AWS.Prelude
 --
 -- For each account and region, AWS CloudFormation lets you specify a Lamdba function that encapsulates any requirements that must be met before CloudFormation can proceed with a stack set operation in that account and region. CloudFormation invokes the function each time a stack set operation is requested for that account and region; if the function returns @FAILED@ , CloudFormation cancels the operation in that account and region, and sets the stack set operation result status for that account and region to @FAILED@ .
 --
--- For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-account-gating.html Configuring a target account gate> .
+-- For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-account-gating.html Configuring a target account gate> .
 --
 --
 -- /See:/ 'accountGateResult' smart constructor.
-data AccountGateResult = AccountGateResult'
-  { _agrStatus       :: !(Maybe AccountGateStatus)
-  , _agrStatusReason :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data AccountGateResult =
+  AccountGateResult'
+    { _agrStatus       :: !(Maybe AccountGateStatus)
+    , _agrStatusReason :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'AccountGateResult' with the minimum fields required to make a request.
@@ -69,12 +71,26 @@ instance NFData AccountGateResult where
 -- | The AccountLimit data type.
 --
 --
+-- CloudFormation has the following limits per account:
+--
+--     * Number of concurrent resources
+--
+--     * Number of stacks
+--
+--     * Number of stack outputs
+--
+--
+--
+-- For more information about these account limits, and other CloudFormation limits, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html AWS CloudFormation Limits> in the /AWS CloudFormation User Guide/ .
+--
 --
 -- /See:/ 'accountLimit' smart constructor.
-data AccountLimit = AccountLimit'
-  { _alValue :: !(Maybe Int)
-  , _alName  :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data AccountLimit =
+  AccountLimit'
+    { _alValue :: !(Maybe Int)
+    , _alName  :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'AccountLimit' with the minimum fields required to make a request.
@@ -83,7 +99,7 @@ data AccountLimit = AccountLimit'
 --
 -- * 'alValue' - The value that is associated with the account limit name.
 --
--- * 'alName' - The name of the account limit. Currently, the only account limit is @StackLimit@ .
+-- * 'alName' - The name of the account limit. Values: @ConcurrentResourcesLimit@ | @StackLimit@ | @StackOutputsLimit@
 accountLimit
     :: AccountLimit
 accountLimit = AccountLimit' {_alValue = Nothing, _alName = Nothing}
@@ -93,7 +109,7 @@ accountLimit = AccountLimit' {_alValue = Nothing, _alName = Nothing}
 alValue :: Lens' AccountLimit (Maybe Int)
 alValue = lens _alValue (\ s a -> s{_alValue = a})
 
--- | The name of the account limit. Currently, the only account limit is @StackLimit@ .
+-- | The name of the account limit. Values: @ConcurrentResourcesLimit@ | @StackLimit@ | @StackOutputsLimit@
 alName :: Lens' AccountLimit (Maybe Text)
 alName = lens _alName (\ s a -> s{_alName = a})
 
@@ -106,15 +122,69 @@ instance Hashable AccountLimit where
 
 instance NFData AccountLimit where
 
+-- | [@Service-managed@ permissions] Describes whether StackSets automatically deploys to AWS Organizations accounts that are added to a target organization or organizational unit (OU).
+--
+--
+--
+-- /See:/ 'autoDeployment' smart constructor.
+data AutoDeployment =
+  AutoDeployment'
+    { _adEnabled                      :: !(Maybe Bool)
+    , _adRetainStacksOnAccountRemoval :: !(Maybe Bool)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'AutoDeployment' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'adEnabled' - If set to @true@ , StackSets automatically deploys additional stack instances to AWS Organizations accounts that are added to a target organization or organizational unit (OU) in the specified Regions. If an account is removed from a target organization or OU, StackSets deletes stack instances from the account in the specified Regions.
+--
+-- * 'adRetainStacksOnAccountRemoval' - If set to @true@ , stack resources are retained when an account is removed from a target organization or OU. If set to @false@ , stack resources are deleted. Specify only if @Enabled@ is set to @True@ .
+autoDeployment
+    :: AutoDeployment
+autoDeployment =
+  AutoDeployment'
+    {_adEnabled = Nothing, _adRetainStacksOnAccountRemoval = Nothing}
+
+
+-- | If set to @true@ , StackSets automatically deploys additional stack instances to AWS Organizations accounts that are added to a target organization or organizational unit (OU) in the specified Regions. If an account is removed from a target organization or OU, StackSets deletes stack instances from the account in the specified Regions.
+adEnabled :: Lens' AutoDeployment (Maybe Bool)
+adEnabled = lens _adEnabled (\ s a -> s{_adEnabled = a})
+
+-- | If set to @true@ , stack resources are retained when an account is removed from a target organization or OU. If set to @false@ , stack resources are deleted. Specify only if @Enabled@ is set to @True@ .
+adRetainStacksOnAccountRemoval :: Lens' AutoDeployment (Maybe Bool)
+adRetainStacksOnAccountRemoval = lens _adRetainStacksOnAccountRemoval (\ s a -> s{_adRetainStacksOnAccountRemoval = a})
+
+instance FromXML AutoDeployment where
+        parseXML x
+          = AutoDeployment' <$>
+              (x .@? "Enabled") <*>
+                (x .@? "RetainStacksOnAccountRemoval")
+
+instance Hashable AutoDeployment where
+
+instance NFData AutoDeployment where
+
+instance ToQuery AutoDeployment where
+        toQuery AutoDeployment'{..}
+          = mconcat
+              ["Enabled" =: _adEnabled,
+               "RetainStacksOnAccountRemoval" =:
+                 _adRetainStacksOnAccountRemoval]
+
 -- | The @Change@ structure describes the changes AWS CloudFormation will perform if you execute the change set.
 --
 --
 --
 -- /See:/ 'change' smart constructor.
-data Change = Change'
-  { _cResourceChange :: !(Maybe ResourceChange)
-  , _cType           :: !(Maybe ChangeType)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Change =
+  Change'
+    { _cResourceChange :: !(Maybe ResourceChange)
+    , _cType           :: !(Maybe ChangeType)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Change' with the minimum fields required to make a request.
@@ -151,17 +221,19 @@ instance NFData Change where
 --
 --
 -- /See:/ 'changeSetSummary' smart constructor.
-data ChangeSetSummary = ChangeSetSummary'
-  { _cCreationTime    :: !(Maybe ISO8601)
-  , _cStatus          :: !(Maybe ChangeSetStatus)
-  , _cChangeSetName   :: !(Maybe Text)
-  , _cExecutionStatus :: !(Maybe ExecutionStatus)
-  , _cChangeSetId     :: !(Maybe Text)
-  , _cStatusReason    :: !(Maybe Text)
-  , _cStackId         :: !(Maybe Text)
-  , _cDescription     :: !(Maybe Text)
-  , _cStackName       :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ChangeSetSummary =
+  ChangeSetSummary'
+    { _cCreationTime    :: !(Maybe ISO8601)
+    , _cStatus          :: !(Maybe ChangeSetStatus)
+    , _cChangeSetName   :: !(Maybe Text)
+    , _cExecutionStatus :: !(Maybe ExecutionStatus)
+    , _cChangeSetId     :: !(Maybe Text)
+    , _cStatusReason    :: !(Maybe Text)
+    , _cStackId         :: !(Maybe Text)
+    , _cDescription     :: !(Maybe Text)
+    , _cStackName       :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ChangeSetSummary' with the minimum fields required to make a request.
@@ -253,16 +325,76 @@ instance Hashable ChangeSetSummary where
 
 instance NFData ChangeSetSummary where
 
+-- | [@Service-managed@ permissions] The AWS Organizations accounts to which StackSets deploys.
+--
+--
+-- For update operations, you can specify either @Accounts@ or @OrganizationalUnitIds@ . For create and delete operations, specify @OrganizationalUnitIds@ .
+--
+--
+-- /See:/ 'deploymentTargets' smart constructor.
+data DeploymentTargets =
+  DeploymentTargets'
+    { _dtAccounts              :: !(Maybe [Text])
+    , _dtOrganizationalUnitIds :: !(Maybe [Text])
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'DeploymentTargets' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'dtAccounts' - The names of one or more AWS accounts for which you want to deploy stack set updates.
+--
+-- * 'dtOrganizationalUnitIds' - The organization root ID or organizational unit (OUs) IDs to which StackSets deploys.
+deploymentTargets
+    :: DeploymentTargets
+deploymentTargets =
+  DeploymentTargets' {_dtAccounts = Nothing, _dtOrganizationalUnitIds = Nothing}
+
+
+-- | The names of one or more AWS accounts for which you want to deploy stack set updates.
+dtAccounts :: Lens' DeploymentTargets [Text]
+dtAccounts = lens _dtAccounts (\ s a -> s{_dtAccounts = a}) . _Default . _Coerce
+
+-- | The organization root ID or organizational unit (OUs) IDs to which StackSets deploys.
+dtOrganizationalUnitIds :: Lens' DeploymentTargets [Text]
+dtOrganizationalUnitIds = lens _dtOrganizationalUnitIds (\ s a -> s{_dtOrganizationalUnitIds = a}) . _Default . _Coerce
+
+instance FromXML DeploymentTargets where
+        parseXML x
+          = DeploymentTargets' <$>
+              (x .@? "Accounts" .!@ mempty >>=
+                 may (parseXMLList "member"))
+                <*>
+                (x .@? "OrganizationalUnitIds" .!@ mempty >>=
+                   may (parseXMLList "member"))
+
+instance Hashable DeploymentTargets where
+
+instance NFData DeploymentTargets where
+
+instance ToQuery DeploymentTargets where
+        toQuery DeploymentTargets'{..}
+          = mconcat
+              ["Accounts" =:
+                 toQuery (toQueryList "member" <$> _dtAccounts),
+               "OrganizationalUnitIds" =:
+                 toQuery
+                   (toQueryList "member" <$> _dtOrganizationalUnitIds)]
+
 -- | The @Export@ structure describes the exported output values for a stack.
 --
 --
 --
 -- /See:/ 'export'' smart constructor.
-data Export = Export'
-  { _eValue            :: !(Maybe Text)
-  , _eExportingStackId :: !(Maybe Text)
-  , _eName             :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Export =
+  Export'
+    { _eValue            :: !(Maybe Text)
+    , _eExportingStackId :: !(Maybe Text)
+    , _eName             :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Export' with the minimum fields required to make a request.
@@ -302,17 +434,71 @@ instance Hashable Export where
 
 instance NFData Export where
 
+-- | Contains logging configuration information for a type.
+--
+--
+--
+-- /See:/ 'loggingConfig' smart constructor.
+data LoggingConfig =
+  LoggingConfig'
+    { _lcLogRoleARN   :: !Text
+    , _lcLogGroupName :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'LoggingConfig' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'lcLogRoleARN' - The ARN of the role that CloudFormation should assume when sending log entries to CloudWatch logs.
+--
+-- * 'lcLogGroupName' - The Amazon CloudWatch log group to which CloudFormation sends error logging information when invoking the type's handlers.
+loggingConfig
+    :: Text -- ^ 'lcLogRoleARN'
+    -> Text -- ^ 'lcLogGroupName'
+    -> LoggingConfig
+loggingConfig pLogRoleARN_ pLogGroupName_ =
+  LoggingConfig'
+    {_lcLogRoleARN = pLogRoleARN_, _lcLogGroupName = pLogGroupName_}
+
+
+-- | The ARN of the role that CloudFormation should assume when sending log entries to CloudWatch logs.
+lcLogRoleARN :: Lens' LoggingConfig Text
+lcLogRoleARN = lens _lcLogRoleARN (\ s a -> s{_lcLogRoleARN = a})
+
+-- | The Amazon CloudWatch log group to which CloudFormation sends error logging information when invoking the type's handlers.
+lcLogGroupName :: Lens' LoggingConfig Text
+lcLogGroupName = lens _lcLogGroupName (\ s a -> s{_lcLogGroupName = a})
+
+instance FromXML LoggingConfig where
+        parseXML x
+          = LoggingConfig' <$>
+              (x .@ "LogRoleArn") <*> (x .@ "LogGroupName")
+
+instance Hashable LoggingConfig where
+
+instance NFData LoggingConfig where
+
+instance ToQuery LoggingConfig where
+        toQuery LoggingConfig'{..}
+          = mconcat
+              ["LogRoleArn" =: _lcLogRoleARN,
+               "LogGroupName" =: _lcLogGroupName]
+
 -- | The Output data type.
 --
 --
 --
 -- /See:/ 'output' smart constructor.
-data Output = Output'
-  { _oOutputValue :: !(Maybe Text)
-  , _oOutputKey   :: !(Maybe Text)
-  , _oExportName  :: !(Maybe Text)
-  , _oDescription :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Output =
+  Output'
+    { _oOutputValue :: !(Maybe Text)
+    , _oOutputKey   :: !(Maybe Text)
+    , _oExportName  :: !(Maybe Text)
+    , _oDescription :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Output' with the minimum fields required to make a request.
@@ -369,12 +555,14 @@ instance NFData Output where
 --
 --
 -- /See:/ 'parameter' smart constructor.
-data Parameter = Parameter'
-  { _pParameterValue   :: !(Maybe Text)
-  , _pResolvedValue    :: !(Maybe Text)
-  , _pParameterKey     :: !(Maybe Text)
-  , _pUsePreviousValue :: !(Maybe Bool)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Parameter =
+  Parameter'
+    { _pParameterValue   :: !(Maybe Text)
+    , _pResolvedValue    :: !(Maybe Text)
+    , _pParameterKey     :: !(Maybe Text)
+    , _pUsePreviousValue :: !(Maybe Bool)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Parameter' with the minimum fields required to make a request.
@@ -383,7 +571,7 @@ data Parameter = Parameter'
 --
 -- * 'pParameterValue' - The input value associated with the parameter.
 --
--- * 'pResolvedValue' - Read-only. The value that corresponds to a Systems Manager parameter key. This field is returned only for <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types @SSM@ parameter types> in the template.
+-- * 'pResolvedValue' - Read-only. The value that corresponds to a Systems Manager parameter key. This field is returned only for <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types @SSM@ parameter types> in the template.
 --
 -- * 'pParameterKey' - The key associated with the parameter. If you don't specify a key and value for a particular parameter, AWS CloudFormation uses the default value that is specified in your template.
 --
@@ -403,7 +591,7 @@ parameter =
 pParameterValue :: Lens' Parameter (Maybe Text)
 pParameterValue = lens _pParameterValue (\ s a -> s{_pParameterValue = a})
 
--- | Read-only. The value that corresponds to a Systems Manager parameter key. This field is returned only for <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types @SSM@ parameter types> in the template.
+-- | Read-only. The value that corresponds to a Systems Manager parameter key. This field is returned only for <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-ssm-parameter-types @SSM@ parameter types> in the template.
 pResolvedValue :: Lens' Parameter (Maybe Text)
 pResolvedValue = lens _pResolvedValue (\ s a -> s{_pResolvedValue = a})
 
@@ -439,9 +627,11 @@ instance ToQuery Parameter where
 --
 --
 -- /See:/ 'parameterConstraints' smart constructor.
-newtype ParameterConstraints = ParameterConstraints'
-  { _pcAllowedValues :: Maybe [Text]
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+newtype ParameterConstraints =
+  ParameterConstraints'
+    { _pcAllowedValues :: Maybe [Text]
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ParameterConstraints' with the minimum fields required to make a request.
@@ -473,14 +663,16 @@ instance NFData ParameterConstraints where
 --
 --
 -- /See:/ 'parameterDeclaration' smart constructor.
-data ParameterDeclaration = ParameterDeclaration'
-  { _pdParameterKey         :: !(Maybe Text)
-  , _pdParameterType        :: !(Maybe Text)
-  , _pdParameterConstraints :: !(Maybe ParameterConstraints)
-  , _pdDefaultValue         :: !(Maybe Text)
-  , _pdNoEcho               :: !(Maybe Bool)
-  , _pdDescription          :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ParameterDeclaration =
+  ParameterDeclaration'
+    { _pdParameterKey         :: !(Maybe Text)
+    , _pdParameterType        :: !(Maybe Text)
+    , _pdParameterConstraints :: !(Maybe ParameterConstraints)
+    , _pdDefaultValue         :: !(Maybe Text)
+    , _pdNoEcho               :: !(Maybe Bool)
+    , _pdDescription          :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ParameterDeclaration' with the minimum fields required to make a request.
@@ -548,20 +740,141 @@ instance Hashable ParameterDeclaration where
 
 instance NFData ParameterDeclaration where
 
+-- | Context information that enables AWS CloudFormation to uniquely identify a resource. AWS CloudFormation uses context key-value pairs in cases where a resource's logical and physical IDs are not enough to uniquely identify that resource. Each context key-value pair specifies a resource that contains the targeted resource.
+--
+--
+--
+-- /See:/ 'physicalResourceIdContextKeyValuePair' smart constructor.
+data PhysicalResourceIdContextKeyValuePair =
+  PhysicalResourceIdContextKeyValuePair'
+    { _prickvpKey   :: !Text
+    , _prickvpValue :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'PhysicalResourceIdContextKeyValuePair' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'prickvpKey' - The resource context key.
+--
+-- * 'prickvpValue' - The resource context value.
+physicalResourceIdContextKeyValuePair
+    :: Text -- ^ 'prickvpKey'
+    -> Text -- ^ 'prickvpValue'
+    -> PhysicalResourceIdContextKeyValuePair
+physicalResourceIdContextKeyValuePair pKey_ pValue_ =
+  PhysicalResourceIdContextKeyValuePair'
+    {_prickvpKey = pKey_, _prickvpValue = pValue_}
+
+
+-- | The resource context key.
+prickvpKey :: Lens' PhysicalResourceIdContextKeyValuePair Text
+prickvpKey = lens _prickvpKey (\ s a -> s{_prickvpKey = a})
+
+-- | The resource context value.
+prickvpValue :: Lens' PhysicalResourceIdContextKeyValuePair Text
+prickvpValue = lens _prickvpValue (\ s a -> s{_prickvpValue = a})
+
+instance FromXML
+           PhysicalResourceIdContextKeyValuePair
+         where
+        parseXML x
+          = PhysicalResourceIdContextKeyValuePair' <$>
+              (x .@ "Key") <*> (x .@ "Value")
+
+instance Hashable
+           PhysicalResourceIdContextKeyValuePair
+         where
+
+instance NFData PhysicalResourceIdContextKeyValuePair
+         where
+
+-- | Information about a resource property whose actual value differs from its expected value, as defined in the stack template and any values specified as template parameters. These will be present only for resources whose @StackResourceDriftStatus@ is @MODIFIED@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+--
+--
+--
+-- /See:/ 'propertyDifference' smart constructor.
+data PropertyDifference =
+  PropertyDifference'
+    { _pdPropertyPath   :: !Text
+    , _pdExpectedValue  :: !Text
+    , _pdActualValue    :: !Text
+    , _pdDifferenceType :: !DifferenceType
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'PropertyDifference' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'pdPropertyPath' - The fully-qualified path to the resource property.
+--
+-- * 'pdExpectedValue' - The expected property value of the resource property, as defined in the stack template and any values specified as template parameters.
+--
+-- * 'pdActualValue' - The actual property value of the resource property.
+--
+-- * 'pdDifferenceType' - The type of property difference.     * @ADD@ : A value has been added to a resource property that is an array or list data type.     * @REMOVE@ : The property has been removed from the current resource configuration.     * @NOT_EQUAL@ : The current property value differs from its expected value (as defined in the stack template and any values specified as template parameters).
+propertyDifference
+    :: Text -- ^ 'pdPropertyPath'
+    -> Text -- ^ 'pdExpectedValue'
+    -> Text -- ^ 'pdActualValue'
+    -> DifferenceType -- ^ 'pdDifferenceType'
+    -> PropertyDifference
+propertyDifference pPropertyPath_ pExpectedValue_ pActualValue_ pDifferenceType_ =
+  PropertyDifference'
+    { _pdPropertyPath = pPropertyPath_
+    , _pdExpectedValue = pExpectedValue_
+    , _pdActualValue = pActualValue_
+    , _pdDifferenceType = pDifferenceType_
+    }
+
+
+-- | The fully-qualified path to the resource property.
+pdPropertyPath :: Lens' PropertyDifference Text
+pdPropertyPath = lens _pdPropertyPath (\ s a -> s{_pdPropertyPath = a})
+
+-- | The expected property value of the resource property, as defined in the stack template and any values specified as template parameters.
+pdExpectedValue :: Lens' PropertyDifference Text
+pdExpectedValue = lens _pdExpectedValue (\ s a -> s{_pdExpectedValue = a})
+
+-- | The actual property value of the resource property.
+pdActualValue :: Lens' PropertyDifference Text
+pdActualValue = lens _pdActualValue (\ s a -> s{_pdActualValue = a})
+
+-- | The type of property difference.     * @ADD@ : A value has been added to a resource property that is an array or list data type.     * @REMOVE@ : The property has been removed from the current resource configuration.     * @NOT_EQUAL@ : The current property value differs from its expected value (as defined in the stack template and any values specified as template parameters).
+pdDifferenceType :: Lens' PropertyDifference DifferenceType
+pdDifferenceType = lens _pdDifferenceType (\ s a -> s{_pdDifferenceType = a})
+
+instance FromXML PropertyDifference where
+        parseXML x
+          = PropertyDifference' <$>
+              (x .@ "PropertyPath") <*> (x .@ "ExpectedValue") <*>
+                (x .@ "ActualValue")
+                <*> (x .@ "DifferenceType")
+
+instance Hashable PropertyDifference where
+
+instance NFData PropertyDifference where
+
 -- | The @ResourceChange@ structure describes the resource and the action that AWS CloudFormation will perform on it if you execute this change set.
 --
 --
 --
 -- /See:/ 'resourceChange' smart constructor.
-data ResourceChange = ResourceChange'
-  { _rcLogicalResourceId  :: !(Maybe Text)
-  , _rcPhysicalResourceId :: !(Maybe Text)
-  , _rcResourceType       :: !(Maybe Text)
-  , _rcAction             :: !(Maybe ChangeAction)
-  , _rcScope              :: !(Maybe [ResourceAttribute])
-  , _rcDetails            :: !(Maybe [ResourceChangeDetail])
-  , _rcReplacement        :: !(Maybe Replacement)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ResourceChange =
+  ResourceChange'
+    { _rcLogicalResourceId  :: !(Maybe Text)
+    , _rcPhysicalResourceId :: !(Maybe Text)
+    , _rcResourceType       :: !(Maybe Text)
+    , _rcAction             :: !(Maybe ChangeAction)
+    , _rcScope              :: !(Maybe [ResourceAttribute])
+    , _rcDetails            :: !(Maybe [ResourceChangeDetail])
+    , _rcReplacement        :: !(Maybe Replacement)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ResourceChange' with the minimum fields required to make a request.
@@ -647,12 +960,14 @@ instance NFData ResourceChange where
 --
 --
 -- /See:/ 'resourceChangeDetail' smart constructor.
-data ResourceChangeDetail = ResourceChangeDetail'
-  { _rcdCausingEntity :: !(Maybe Text)
-  , _rcdChangeSource  :: !(Maybe ChangeSource)
-  , _rcdEvaluation    :: !(Maybe EvaluationType)
-  , _rcdTarget        :: !(Maybe ResourceTargetDefinition)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ResourceChangeDetail =
+  ResourceChangeDetail'
+    { _rcdCausingEntity :: !(Maybe Text)
+    , _rcdChangeSource  :: !(Maybe ChangeSource)
+    , _rcdEvaluation    :: !(Maybe EvaluationType)
+    , _rcdTarget        :: !(Maybe ResourceTargetDefinition)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ResourceChangeDetail' with the minimum fields required to make a request.
@@ -704,16 +1019,77 @@ instance Hashable ResourceChangeDetail where
 
 instance NFData ResourceChangeDetail where
 
+-- | Describes the target resources of a specific type in your import template (for example, all @AWS::S3::Bucket@ resources) and the properties you can provide during the import to identify resources of that type.
+--
+--
+--
+-- /See:/ 'resourceIdentifierSummary' smart constructor.
+data ResourceIdentifierSummary =
+  ResourceIdentifierSummary'
+    { _risResourceType        :: !(Maybe Text)
+    , _risLogicalResourceIds  :: !(Maybe (List1 Text))
+    , _risResourceIdentifiers :: !(Maybe [Text])
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'ResourceIdentifierSummary' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'risResourceType' - The template resource type of the target resources, such as @AWS::S3::Bucket@ .
+--
+-- * 'risLogicalResourceIds' - The logical IDs of the target resources of the specified @ResourceType@ , as defined in the import template.
+--
+-- * 'risResourceIdentifiers' - The resource properties you can provide during the import to identify your target resources. For example, @BucketName@ is a possible identifier property for @AWS::S3::Bucket@ resources.
+resourceIdentifierSummary
+    :: ResourceIdentifierSummary
+resourceIdentifierSummary =
+  ResourceIdentifierSummary'
+    { _risResourceType = Nothing
+    , _risLogicalResourceIds = Nothing
+    , _risResourceIdentifiers = Nothing
+    }
+
+
+-- | The template resource type of the target resources, such as @AWS::S3::Bucket@ .
+risResourceType :: Lens' ResourceIdentifierSummary (Maybe Text)
+risResourceType = lens _risResourceType (\ s a -> s{_risResourceType = a})
+
+-- | The logical IDs of the target resources of the specified @ResourceType@ , as defined in the import template.
+risLogicalResourceIds :: Lens' ResourceIdentifierSummary (Maybe (NonEmpty Text))
+risLogicalResourceIds = lens _risLogicalResourceIds (\ s a -> s{_risLogicalResourceIds = a}) . mapping _List1
+
+-- | The resource properties you can provide during the import to identify your target resources. For example, @BucketName@ is a possible identifier property for @AWS::S3::Bucket@ resources.
+risResourceIdentifiers :: Lens' ResourceIdentifierSummary [Text]
+risResourceIdentifiers = lens _risResourceIdentifiers (\ s a -> s{_risResourceIdentifiers = a}) . _Default . _Coerce
+
+instance FromXML ResourceIdentifierSummary where
+        parseXML x
+          = ResourceIdentifierSummary' <$>
+              (x .@? "ResourceType") <*>
+                (x .@? "LogicalResourceIds" .!@ mempty >>=
+                   may (parseXMLList1 "member"))
+                <*>
+                (x .@? "ResourceIdentifiers" .!@ mempty >>=
+                   may (parseXMLList "member"))
+
+instance Hashable ResourceIdentifierSummary where
+
+instance NFData ResourceIdentifierSummary where
+
 -- | The field that AWS CloudFormation will change, such as the name of a resource's property, and whether the resource will be recreated.
 --
 --
 --
 -- /See:/ 'resourceTargetDefinition' smart constructor.
-data ResourceTargetDefinition = ResourceTargetDefinition'
-  { _rtdAttribute          :: !(Maybe ResourceAttribute)
-  , _rtdRequiresRecreation :: !(Maybe RequiresRecreation)
-  , _rtdName               :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ResourceTargetDefinition =
+  ResourceTargetDefinition'
+    { _rtdAttribute          :: !(Maybe ResourceAttribute)
+    , _rtdRequiresRecreation :: !(Maybe RequiresRecreation)
+    , _rtdName               :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ResourceTargetDefinition' with the minimum fields required to make a request.
@@ -722,7 +1098,7 @@ data ResourceTargetDefinition = ResourceTargetDefinition'
 --
 -- * 'rtdAttribute' - Indicates which resource attribute is triggering this update, such as a change in the resource attribute's @Metadata@ , @Properties@ , or @Tags@ .
 --
--- * 'rtdRequiresRecreation' - If the @Attribute@ value is @Properties@ , indicates whether a change to this property causes the resource to be recreated. The value can be @Never@ , @Always@ , or @Conditionally@ . To determine the conditions for a @Conditionally@ recreation, see the update behavior for that <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html property> in the AWS CloudFormation User Guide.
+-- * 'rtdRequiresRecreation' - If the @Attribute@ value is @Properties@ , indicates whether a change to this property causes the resource to be recreated. The value can be @Never@ , @Always@ , or @Conditionally@ . To determine the conditions for a @Conditionally@ recreation, see the update behavior for that <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html property> in the AWS CloudFormation User Guide.
 --
 -- * 'rtdName' - If the @Attribute@ value is @Properties@ , the name of the property. For all other attributes, the value is null.
 resourceTargetDefinition
@@ -739,7 +1115,7 @@ resourceTargetDefinition =
 rtdAttribute :: Lens' ResourceTargetDefinition (Maybe ResourceAttribute)
 rtdAttribute = lens _rtdAttribute (\ s a -> s{_rtdAttribute = a})
 
--- | If the @Attribute@ value is @Properties@ , indicates whether a change to this property causes the resource to be recreated. The value can be @Never@ , @Always@ , or @Conditionally@ . To determine the conditions for a @Conditionally@ recreation, see the update behavior for that <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html property> in the AWS CloudFormation User Guide.
+-- | If the @Attribute@ value is @Properties@ , indicates whether a change to this property causes the resource to be recreated. The value can be @Never@ , @Always@ , or @Conditionally@ . To determine the conditions for a @Conditionally@ recreation, see the update behavior for that <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html property> in the AWS CloudFormation User Guide.
 rtdRequiresRecreation :: Lens' ResourceTargetDefinition (Maybe RequiresRecreation)
 rtdRequiresRecreation = lens _rtdRequiresRecreation (\ s a -> s{_rtdRequiresRecreation = a})
 
@@ -757,6 +1133,66 @@ instance Hashable ResourceTargetDefinition where
 
 instance NFData ResourceTargetDefinition where
 
+-- | Describes the target resource of an import operation.
+--
+--
+--
+-- /See:/ 'resourceToImport' smart constructor.
+data ResourceToImport =
+  ResourceToImport'
+    { _rtiResourceType       :: !Text
+    , _rtiLogicalResourceId  :: !Text
+    , _rtiResourceIdentifier :: !(Map Text Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'ResourceToImport' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'rtiResourceType' - The type of resource to import into your stack, such as @AWS::S3::Bucket@ .
+--
+-- * 'rtiLogicalResourceId' - The logical ID of the target resource as specified in the template.
+--
+-- * 'rtiResourceIdentifier' - A key-value pair that identifies the target resource. The key is an identifier property (for example, @BucketName@ for @AWS::S3::Bucket@ resources) and the value is the actual property value (for example, @MyS3Bucket@ ).
+resourceToImport
+    :: Text -- ^ 'rtiResourceType'
+    -> Text -- ^ 'rtiLogicalResourceId'
+    -> ResourceToImport
+resourceToImport pResourceType_ pLogicalResourceId_ =
+  ResourceToImport'
+    { _rtiResourceType = pResourceType_
+    , _rtiLogicalResourceId = pLogicalResourceId_
+    , _rtiResourceIdentifier = mempty
+    }
+
+
+-- | The type of resource to import into your stack, such as @AWS::S3::Bucket@ .
+rtiResourceType :: Lens' ResourceToImport Text
+rtiResourceType = lens _rtiResourceType (\ s a -> s{_rtiResourceType = a})
+
+-- | The logical ID of the target resource as specified in the template.
+rtiLogicalResourceId :: Lens' ResourceToImport Text
+rtiLogicalResourceId = lens _rtiLogicalResourceId (\ s a -> s{_rtiLogicalResourceId = a})
+
+-- | A key-value pair that identifies the target resource. The key is an identifier property (for example, @BucketName@ for @AWS::S3::Bucket@ resources) and the value is the actual property value (for example, @MyS3Bucket@ ).
+rtiResourceIdentifier :: Lens' ResourceToImport (HashMap Text Text)
+rtiResourceIdentifier = lens _rtiResourceIdentifier (\ s a -> s{_rtiResourceIdentifier = a}) . _Map
+
+instance Hashable ResourceToImport where
+
+instance NFData ResourceToImport where
+
+instance ToQuery ResourceToImport where
+        toQuery ResourceToImport'{..}
+          = mconcat
+              ["ResourceType" =: _rtiResourceType,
+               "LogicalResourceId" =: _rtiLogicalResourceId,
+               "ResourceIdentifier" =:
+                 toQueryMap "entry" "key" "value"
+                   _rtiResourceIdentifier]
+
 -- | Structure containing the rollback triggers for AWS CloudFormation to monitor during stack creation and updating operations, and for the specified monitoring period afterwards.
 --
 --
@@ -764,10 +1200,12 @@ instance NFData ResourceTargetDefinition where
 --
 --
 -- /See:/ 'rollbackConfiguration' smart constructor.
-data RollbackConfiguration = RollbackConfiguration'
-  { _rcRollbackTriggers        :: !(Maybe [RollbackTrigger])
-  , _rcMonitoringTimeInMinutes :: !(Maybe Nat)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data RollbackConfiguration =
+  RollbackConfiguration'
+    { _rcRollbackTriggers        :: !(Maybe [RollbackTrigger])
+    , _rcMonitoringTimeInMinutes :: !(Maybe Nat)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'RollbackConfiguration' with the minimum fields required to make a request.
@@ -776,7 +1214,7 @@ data RollbackConfiguration = RollbackConfiguration'
 --
 -- * 'rcRollbackTriggers' - The triggers to monitor during stack creation or update actions.  By default, AWS CloudFormation saves the rollback triggers specified for a stack and applies them to any subsequent update operations for the stack, unless you specify otherwise. If you do specify rollback triggers for this parameter, those triggers replace any list of triggers previously specified for the stack. This means:     * To use the rollback triggers previously specified for this stack, if any, don't specify this parameter.     * To specify new or updated rollback triggers, you must specify /all/ the triggers that you want used for this stack, even triggers you've specifed before (for example, when creating the stack or during a previous stack update). Any triggers that you don't include in the updated list of triggers are no longer applied to the stack.     * To remove all currently specified triggers, specify an empty list for this parameter. If a specified trigger is missing, the entire stack operation fails and is rolled back.
 --
--- * 'rcMonitoringTimeInMinutes' - The amount of time, in minutes, during which CloudFormation should monitor all the rollback triggers after the stack creation or update operation deploys all necessary resources. The default is 0 minutes. If you specify a monitoring period but do not specify any rollback triggers, CloudFormation still waits the specified period of time before cleaning up old resources after update operations. You can use this monitoring period to perform any manual stack validation desired, and manually cancel the stack creation or update (using <http://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CancelUpdateStack.html CancelUpdateStack> , for example) as necessary. If you specify 0 for this parameter, CloudFormation still monitors the specified rollback triggers during stack creation and update operations. Then, for update operations, it begins disposing of old resources immediately once the operation completes.
+-- * 'rcMonitoringTimeInMinutes' - The amount of time, in minutes, during which CloudFormation should monitor all the rollback triggers after the stack creation or update operation deploys all necessary resources. The default is 0 minutes. If you specify a monitoring period but do not specify any rollback triggers, CloudFormation still waits the specified period of time before cleaning up old resources after update operations. You can use this monitoring period to perform any manual stack validation desired, and manually cancel the stack creation or update (using <https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CancelUpdateStack.html CancelUpdateStack> , for example) as necessary. If you specify 0 for this parameter, CloudFormation still monitors the specified rollback triggers during stack creation and update operations. Then, for update operations, it begins disposing of old resources immediately once the operation completes.
 rollbackConfiguration
     :: RollbackConfiguration
 rollbackConfiguration =
@@ -788,7 +1226,7 @@ rollbackConfiguration =
 rcRollbackTriggers :: Lens' RollbackConfiguration [RollbackTrigger]
 rcRollbackTriggers = lens _rcRollbackTriggers (\ s a -> s{_rcRollbackTriggers = a}) . _Default . _Coerce
 
--- | The amount of time, in minutes, during which CloudFormation should monitor all the rollback triggers after the stack creation or update operation deploys all necessary resources. The default is 0 minutes. If you specify a monitoring period but do not specify any rollback triggers, CloudFormation still waits the specified period of time before cleaning up old resources after update operations. You can use this monitoring period to perform any manual stack validation desired, and manually cancel the stack creation or update (using <http://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CancelUpdateStack.html CancelUpdateStack> , for example) as necessary. If you specify 0 for this parameter, CloudFormation still monitors the specified rollback triggers during stack creation and update operations. Then, for update operations, it begins disposing of old resources immediately once the operation completes.
+-- | The amount of time, in minutes, during which CloudFormation should monitor all the rollback triggers after the stack creation or update operation deploys all necessary resources. The default is 0 minutes. If you specify a monitoring period but do not specify any rollback triggers, CloudFormation still waits the specified period of time before cleaning up old resources after update operations. You can use this monitoring period to perform any manual stack validation desired, and manually cancel the stack creation or update (using <https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CancelUpdateStack.html CancelUpdateStack> , for example) as necessary. If you specify 0 for this parameter, CloudFormation still monitors the specified rollback triggers during stack creation and update operations. Then, for update operations, it begins disposing of old resources immediately once the operation completes.
 rcMonitoringTimeInMinutes :: Lens' RollbackConfiguration (Maybe Natural)
 rcMonitoringTimeInMinutes = lens _rcMonitoringTimeInMinutes (\ s a -> s{_rcMonitoringTimeInMinutes = a}) . mapping _Nat
 
@@ -817,10 +1255,12 @@ instance ToQuery RollbackConfiguration where
 --
 --
 -- /See:/ 'rollbackTrigger' smart constructor.
-data RollbackTrigger = RollbackTrigger'
-  { _rtARN  :: !Text
-  , _rtType :: !Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data RollbackTrigger =
+  RollbackTrigger'
+    { _rtARN  :: !Text
+    , _rtType :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'RollbackTrigger' with the minimum fields required to make a request.
@@ -829,7 +1269,7 @@ data RollbackTrigger = RollbackTrigger'
 --
 -- * 'rtARN' - The Amazon Resource Name (ARN) of the rollback trigger. If a specified trigger is missing, the entire stack operation fails and is rolled back.
 --
--- * 'rtType' - The resource type of the rollback trigger. Currently, <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html AWS::CloudWatch::Alarm> is the only supported resource type.
+-- * 'rtType' - The resource type of the rollback trigger. Currently, <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html AWS::CloudWatch::Alarm> is the only supported resource type.
 rollbackTrigger
     :: Text -- ^ 'rtARN'
     -> Text -- ^ 'rtType'
@@ -842,7 +1282,7 @@ rollbackTrigger pARN_ pType_ =
 rtARN :: Lens' RollbackTrigger Text
 rtARN = lens _rtARN (\ s a -> s{_rtARN = a})
 
--- | The resource type of the rollback trigger. Currently, <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html AWS::CloudWatch::Alarm> is the only supported resource type.
+-- | The resource type of the rollback trigger. Currently, <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-alarm.html AWS::CloudWatch::Alarm> is the only supported resource type.
 rtType :: Lens' RollbackTrigger Text
 rtType = lens _rtType (\ s a -> s{_rtType = a})
 
@@ -863,190 +1303,200 @@ instance ToQuery RollbackTrigger where
 --
 --
 -- /See:/ 'stack' smart constructor.
-data Stack = Stack'
-  { _sDisableRollback             :: !(Maybe Bool)
-  , _sLastUpdatedTime             :: !(Maybe ISO8601)
-  , _sRootId                      :: !(Maybe Text)
-  , _sNotificationARNs            :: !(Maybe [Text])
-  , _sStackStatusReason           :: !(Maybe Text)
-  , _sEnableTerminationProtection :: !(Maybe Bool)
-  , _sChangeSetId                 :: !(Maybe Text)
-  , _sDeletionTime                :: !(Maybe ISO8601)
-  , _sOutputs                     :: !(Maybe [Output])
-  , _sParameters                  :: !(Maybe [Parameter])
-  , _sStackId                     :: !(Maybe Text)
-  , _sDescription                 :: !(Maybe Text)
-  , _sCapabilities                :: !(Maybe [Capability])
-  , _sRollbackConfiguration       :: !(Maybe RollbackConfiguration)
-  , _sTags                        :: !(Maybe [Tag])
-  , _sTimeoutInMinutes            :: !(Maybe Nat)
-  , _sParentId                    :: !(Maybe Text)
-  , _sRoleARN                     :: !(Maybe Text)
-  , _sStackName                   :: !Text
-  , _sCreationTime                :: !ISO8601
-  , _sStackStatus                 :: !StackStatus
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Stack =
+  Stack'
+    { _staDisableRollback             :: !(Maybe Bool)
+    , _staLastUpdatedTime             :: !(Maybe ISO8601)
+    , _staRootId                      :: !(Maybe Text)
+    , _staNotificationARNs            :: !(Maybe [Text])
+    , _staStackStatusReason           :: !(Maybe Text)
+    , _staEnableTerminationProtection :: !(Maybe Bool)
+    , _staDriftInformation            :: !(Maybe StackDriftInformation)
+    , _staChangeSetId                 :: !(Maybe Text)
+    , _staDeletionTime                :: !(Maybe ISO8601)
+    , _staOutputs                     :: !(Maybe [Output])
+    , _staParameters                  :: !(Maybe [Parameter])
+    , _staStackId                     :: !(Maybe Text)
+    , _staDescription                 :: !(Maybe Text)
+    , _staCapabilities                :: !(Maybe [Capability])
+    , _staRollbackConfiguration       :: !(Maybe RollbackConfiguration)
+    , _staTags                        :: !(Maybe [Tag])
+    , _staTimeoutInMinutes            :: !(Maybe Nat)
+    , _staParentId                    :: !(Maybe Text)
+    , _staRoleARN                     :: !(Maybe Text)
+    , _staStackName                   :: !Text
+    , _staCreationTime                :: !ISO8601
+    , _staStackStatus                 :: !StackStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Stack' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'sDisableRollback' - Boolean to enable or disable rollback on stack creation failures:     * @true@ : disable rollback     * @false@ : enable rollback
+-- * 'staDisableRollback' - Boolean to enable or disable rollback on stack creation failures:     * @true@ : disable rollback     * @false@ : enable rollback
 --
--- * 'sLastUpdatedTime' - The time the stack was last updated. This field will only be returned if the stack has been updated at least once.
+-- * 'staLastUpdatedTime' - The time the stack was last updated. This field will only be returned if the stack has been updated at least once.
 --
--- * 'sRootId' - For nested stacks--stacks created as resources for another stack--the stack ID of the the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
+-- * 'staRootId' - For nested stacks--stacks created as resources for another stack--the stack ID of the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
 --
--- * 'sNotificationARNs' - SNS topic ARNs to which stack related events are published.
+-- * 'staNotificationARNs' - SNS topic ARNs to which stack related events are published.
 --
--- * 'sStackStatusReason' - Success/failure message associated with the stack status.
+-- * 'staStackStatusReason' - Success/failure message associated with the stack status.
 --
--- * 'sEnableTerminationProtection' - Whether termination protection is enabled for the stack. For <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html nested stacks> , termination protection is set on the root stack and cannot be changed directly on the nested stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html Protecting a Stack From Being Deleted> in the /AWS CloudFormation User Guide/ .
+-- * 'staEnableTerminationProtection' - Whether termination protection is enabled for the stack. For <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html nested stacks> , termination protection is set on the root stack and cannot be changed directly on the nested stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html Protecting a Stack From Being Deleted> in the /AWS CloudFormation User Guide/ .
 --
--- * 'sChangeSetId' - The unique ID of the change set.
+-- * 'staDriftInformation' - Information on whether a stack's actual configuration differs, or has /drifted/ , from it's expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
 --
--- * 'sDeletionTime' - The time the stack was deleted.
+-- * 'staChangeSetId' - The unique ID of the change set.
 --
--- * 'sOutputs' - A list of output structures.
+-- * 'staDeletionTime' - The time the stack was deleted.
 --
--- * 'sParameters' - A list of @Parameter@ structures.
+-- * 'staOutputs' - A list of output structures.
 --
--- * 'sStackId' - Unique identifier of the stack.
+-- * 'staParameters' - A list of @Parameter@ structures.
 --
--- * 'sDescription' - A user-defined description associated with the stack.
+-- * 'staStackId' - Unique identifier of the stack.
 --
--- * 'sCapabilities' - The capabilities allowed in the stack.
+-- * 'staDescription' - A user-defined description associated with the stack.
 --
--- * 'sRollbackConfiguration' - The rollback triggers for AWS CloudFormation to monitor during stack creation and updating operations, and for the specified monitoring period afterwards.
+-- * 'staCapabilities' - The capabilities allowed in the stack.
 --
--- * 'sTags' - A list of @Tag@ s that specify information about the stack.
+-- * 'staRollbackConfiguration' - The rollback triggers for AWS CloudFormation to monitor during stack creation and updating operations, and for the specified monitoring period afterwards.
 --
--- * 'sTimeoutInMinutes' - The amount of time within which stack creation should complete.
+-- * 'staTags' - A list of @Tag@ s that specify information about the stack.
 --
--- * 'sParentId' - For nested stacks--stacks created as resources for another stack--the stack ID of the direct parent of this stack. For the first level of nested stacks, the root stack is also the parent stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
+-- * 'staTimeoutInMinutes' - The amount of time within which stack creation should complete.
 --
--- * 'sRoleARN' - The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that is associated with the stack. During a stack operation, AWS CloudFormation uses this role's credentials to make calls on your behalf.
+-- * 'staParentId' - For nested stacks--stacks created as resources for another stack--the stack ID of the direct parent of this stack. For the first level of nested stacks, the root stack is also the parent stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
 --
--- * 'sStackName' - The name associated with the stack.
+-- * 'staRoleARN' - The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that is associated with the stack. During a stack operation, AWS CloudFormation uses this role's credentials to make calls on your behalf.
 --
--- * 'sCreationTime' - The time at which the stack was created.
+-- * 'staStackName' - The name associated with the stack.
 --
--- * 'sStackStatus' - Current status of the stack.
+-- * 'staCreationTime' - The time at which the stack was created.
+--
+-- * 'staStackStatus' - Current status of the stack.
 stack
-    :: Text -- ^ 'sStackName'
-    -> UTCTime -- ^ 'sCreationTime'
-    -> StackStatus -- ^ 'sStackStatus'
+    :: Text -- ^ 'staStackName'
+    -> UTCTime -- ^ 'staCreationTime'
+    -> StackStatus -- ^ 'staStackStatus'
     -> Stack
 stack pStackName_ pCreationTime_ pStackStatus_ =
   Stack'
-    { _sDisableRollback = Nothing
-    , _sLastUpdatedTime = Nothing
-    , _sRootId = Nothing
-    , _sNotificationARNs = Nothing
-    , _sStackStatusReason = Nothing
-    , _sEnableTerminationProtection = Nothing
-    , _sChangeSetId = Nothing
-    , _sDeletionTime = Nothing
-    , _sOutputs = Nothing
-    , _sParameters = Nothing
-    , _sStackId = Nothing
-    , _sDescription = Nothing
-    , _sCapabilities = Nothing
-    , _sRollbackConfiguration = Nothing
-    , _sTags = Nothing
-    , _sTimeoutInMinutes = Nothing
-    , _sParentId = Nothing
-    , _sRoleARN = Nothing
-    , _sStackName = pStackName_
-    , _sCreationTime = _Time # pCreationTime_
-    , _sStackStatus = pStackStatus_
+    { _staDisableRollback = Nothing
+    , _staLastUpdatedTime = Nothing
+    , _staRootId = Nothing
+    , _staNotificationARNs = Nothing
+    , _staStackStatusReason = Nothing
+    , _staEnableTerminationProtection = Nothing
+    , _staDriftInformation = Nothing
+    , _staChangeSetId = Nothing
+    , _staDeletionTime = Nothing
+    , _staOutputs = Nothing
+    , _staParameters = Nothing
+    , _staStackId = Nothing
+    , _staDescription = Nothing
+    , _staCapabilities = Nothing
+    , _staRollbackConfiguration = Nothing
+    , _staTags = Nothing
+    , _staTimeoutInMinutes = Nothing
+    , _staParentId = Nothing
+    , _staRoleARN = Nothing
+    , _staStackName = pStackName_
+    , _staCreationTime = _Time # pCreationTime_
+    , _staStackStatus = pStackStatus_
     }
 
 
 -- | Boolean to enable or disable rollback on stack creation failures:     * @true@ : disable rollback     * @false@ : enable rollback
-sDisableRollback :: Lens' Stack (Maybe Bool)
-sDisableRollback = lens _sDisableRollback (\ s a -> s{_sDisableRollback = a})
+staDisableRollback :: Lens' Stack (Maybe Bool)
+staDisableRollback = lens _staDisableRollback (\ s a -> s{_staDisableRollback = a})
 
 -- | The time the stack was last updated. This field will only be returned if the stack has been updated at least once.
-sLastUpdatedTime :: Lens' Stack (Maybe UTCTime)
-sLastUpdatedTime = lens _sLastUpdatedTime (\ s a -> s{_sLastUpdatedTime = a}) . mapping _Time
+staLastUpdatedTime :: Lens' Stack (Maybe UTCTime)
+staLastUpdatedTime = lens _staLastUpdatedTime (\ s a -> s{_staLastUpdatedTime = a}) . mapping _Time
 
--- | For nested stacks--stacks created as resources for another stack--the stack ID of the the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
-sRootId :: Lens' Stack (Maybe Text)
-sRootId = lens _sRootId (\ s a -> s{_sRootId = a})
+-- | For nested stacks--stacks created as resources for another stack--the stack ID of the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
+staRootId :: Lens' Stack (Maybe Text)
+staRootId = lens _staRootId (\ s a -> s{_staRootId = a})
 
 -- | SNS topic ARNs to which stack related events are published.
-sNotificationARNs :: Lens' Stack [Text]
-sNotificationARNs = lens _sNotificationARNs (\ s a -> s{_sNotificationARNs = a}) . _Default . _Coerce
+staNotificationARNs :: Lens' Stack [Text]
+staNotificationARNs = lens _staNotificationARNs (\ s a -> s{_staNotificationARNs = a}) . _Default . _Coerce
 
 -- | Success/failure message associated with the stack status.
-sStackStatusReason :: Lens' Stack (Maybe Text)
-sStackStatusReason = lens _sStackStatusReason (\ s a -> s{_sStackStatusReason = a})
+staStackStatusReason :: Lens' Stack (Maybe Text)
+staStackStatusReason = lens _staStackStatusReason (\ s a -> s{_staStackStatusReason = a})
 
 -- | Whether termination protection is enabled for the stack. For <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html nested stacks> , termination protection is set on the root stack and cannot be changed directly on the nested stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-protect-stacks.html Protecting a Stack From Being Deleted> in the /AWS CloudFormation User Guide/ .
-sEnableTerminationProtection :: Lens' Stack (Maybe Bool)
-sEnableTerminationProtection = lens _sEnableTerminationProtection (\ s a -> s{_sEnableTerminationProtection = a})
+staEnableTerminationProtection :: Lens' Stack (Maybe Bool)
+staEnableTerminationProtection = lens _staEnableTerminationProtection (\ s a -> s{_staEnableTerminationProtection = a})
+
+-- | Information on whether a stack's actual configuration differs, or has /drifted/ , from it's expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+staDriftInformation :: Lens' Stack (Maybe StackDriftInformation)
+staDriftInformation = lens _staDriftInformation (\ s a -> s{_staDriftInformation = a})
 
 -- | The unique ID of the change set.
-sChangeSetId :: Lens' Stack (Maybe Text)
-sChangeSetId = lens _sChangeSetId (\ s a -> s{_sChangeSetId = a})
+staChangeSetId :: Lens' Stack (Maybe Text)
+staChangeSetId = lens _staChangeSetId (\ s a -> s{_staChangeSetId = a})
 
 -- | The time the stack was deleted.
-sDeletionTime :: Lens' Stack (Maybe UTCTime)
-sDeletionTime = lens _sDeletionTime (\ s a -> s{_sDeletionTime = a}) . mapping _Time
+staDeletionTime :: Lens' Stack (Maybe UTCTime)
+staDeletionTime = lens _staDeletionTime (\ s a -> s{_staDeletionTime = a}) . mapping _Time
 
 -- | A list of output structures.
-sOutputs :: Lens' Stack [Output]
-sOutputs = lens _sOutputs (\ s a -> s{_sOutputs = a}) . _Default . _Coerce
+staOutputs :: Lens' Stack [Output]
+staOutputs = lens _staOutputs (\ s a -> s{_staOutputs = a}) . _Default . _Coerce
 
 -- | A list of @Parameter@ structures.
-sParameters :: Lens' Stack [Parameter]
-sParameters = lens _sParameters (\ s a -> s{_sParameters = a}) . _Default . _Coerce
+staParameters :: Lens' Stack [Parameter]
+staParameters = lens _staParameters (\ s a -> s{_staParameters = a}) . _Default . _Coerce
 
 -- | Unique identifier of the stack.
-sStackId :: Lens' Stack (Maybe Text)
-sStackId = lens _sStackId (\ s a -> s{_sStackId = a})
+staStackId :: Lens' Stack (Maybe Text)
+staStackId = lens _staStackId (\ s a -> s{_staStackId = a})
 
 -- | A user-defined description associated with the stack.
-sDescription :: Lens' Stack (Maybe Text)
-sDescription = lens _sDescription (\ s a -> s{_sDescription = a})
+staDescription :: Lens' Stack (Maybe Text)
+staDescription = lens _staDescription (\ s a -> s{_staDescription = a})
 
 -- | The capabilities allowed in the stack.
-sCapabilities :: Lens' Stack [Capability]
-sCapabilities = lens _sCapabilities (\ s a -> s{_sCapabilities = a}) . _Default . _Coerce
+staCapabilities :: Lens' Stack [Capability]
+staCapabilities = lens _staCapabilities (\ s a -> s{_staCapabilities = a}) . _Default . _Coerce
 
 -- | The rollback triggers for AWS CloudFormation to monitor during stack creation and updating operations, and for the specified monitoring period afterwards.
-sRollbackConfiguration :: Lens' Stack (Maybe RollbackConfiguration)
-sRollbackConfiguration = lens _sRollbackConfiguration (\ s a -> s{_sRollbackConfiguration = a})
+staRollbackConfiguration :: Lens' Stack (Maybe RollbackConfiguration)
+staRollbackConfiguration = lens _staRollbackConfiguration (\ s a -> s{_staRollbackConfiguration = a})
 
 -- | A list of @Tag@ s that specify information about the stack.
-sTags :: Lens' Stack [Tag]
-sTags = lens _sTags (\ s a -> s{_sTags = a}) . _Default . _Coerce
+staTags :: Lens' Stack [Tag]
+staTags = lens _staTags (\ s a -> s{_staTags = a}) . _Default . _Coerce
 
 -- | The amount of time within which stack creation should complete.
-sTimeoutInMinutes :: Lens' Stack (Maybe Natural)
-sTimeoutInMinutes = lens _sTimeoutInMinutes (\ s a -> s{_sTimeoutInMinutes = a}) . mapping _Nat
+staTimeoutInMinutes :: Lens' Stack (Maybe Natural)
+staTimeoutInMinutes = lens _staTimeoutInMinutes (\ s a -> s{_staTimeoutInMinutes = a}) . mapping _Nat
 
 -- | For nested stacks--stacks created as resources for another stack--the stack ID of the direct parent of this stack. For the first level of nested stacks, the root stack is also the parent stack. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
-sParentId :: Lens' Stack (Maybe Text)
-sParentId = lens _sParentId (\ s a -> s{_sParentId = a})
+staParentId :: Lens' Stack (Maybe Text)
+staParentId = lens _staParentId (\ s a -> s{_staParentId = a})
 
 -- | The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that is associated with the stack. During a stack operation, AWS CloudFormation uses this role's credentials to make calls on your behalf.
-sRoleARN :: Lens' Stack (Maybe Text)
-sRoleARN = lens _sRoleARN (\ s a -> s{_sRoleARN = a})
+staRoleARN :: Lens' Stack (Maybe Text)
+staRoleARN = lens _staRoleARN (\ s a -> s{_staRoleARN = a})
 
 -- | The name associated with the stack.
-sStackName :: Lens' Stack Text
-sStackName = lens _sStackName (\ s a -> s{_sStackName = a})
+staStackName :: Lens' Stack Text
+staStackName = lens _staStackName (\ s a -> s{_staStackName = a})
 
 -- | The time at which the stack was created.
-sCreationTime :: Lens' Stack UTCTime
-sCreationTime = lens _sCreationTime (\ s a -> s{_sCreationTime = a}) . _Time
+staCreationTime :: Lens' Stack UTCTime
+staCreationTime = lens _staCreationTime (\ s a -> s{_staCreationTime = a}) . _Time
 
 -- | Current status of the stack.
-sStackStatus :: Lens' Stack StackStatus
-sStackStatus = lens _sStackStatus (\ s a -> s{_sStackStatus = a})
+staStackStatus :: Lens' Stack StackStatus
+staStackStatus = lens _staStackStatus (\ s a -> s{_staStackStatus = a})
 
 instance FromXML Stack where
         parseXML x
@@ -1059,6 +1509,7 @@ instance FromXML Stack where
                    may (parseXMLList "member"))
                 <*> (x .@? "StackStatusReason")
                 <*> (x .@? "EnableTerminationProtection")
+                <*> (x .@? "DriftInformation")
                 <*> (x .@? "ChangeSetId")
                 <*> (x .@? "DeletionTime")
                 <*>
@@ -1087,24 +1538,122 @@ instance Hashable Stack where
 
 instance NFData Stack where
 
+-- | Contains information about whether the stack's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. A stack is considered to have drifted if one or more of its resources have drifted.
+--
+--
+--
+-- /See:/ 'stackDriftInformation' smart constructor.
+data StackDriftInformation =
+  StackDriftInformation'
+    { _sdiLastCheckTimestamp :: !(Maybe ISO8601)
+    , _sdiStackDriftStatus   :: !StackDriftStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackDriftInformation' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'sdiLastCheckTimestamp' - Most recent time when a drift detection operation was initiated on the stack, or any of its individual resources that support drift detection.
+--
+-- * 'sdiStackDriftStatus' - Status of the stack's actual configuration compared to its expected template configuration.      * @DRIFTED@ : The stack differs from its expected template configuration. A stack is considered to have drifted if one or more of its resources have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack differs from its expected template configuration.     * @IN_SYNC@ : The stack's actual configuration matches its expected template configuration.     * @UNKNOWN@ : This value is reserved for future use.
+stackDriftInformation
+    :: StackDriftStatus -- ^ 'sdiStackDriftStatus'
+    -> StackDriftInformation
+stackDriftInformation pStackDriftStatus_ =
+  StackDriftInformation'
+    { _sdiLastCheckTimestamp = Nothing
+    , _sdiStackDriftStatus = pStackDriftStatus_
+    }
+
+
+-- | Most recent time when a drift detection operation was initiated on the stack, or any of its individual resources that support drift detection.
+sdiLastCheckTimestamp :: Lens' StackDriftInformation (Maybe UTCTime)
+sdiLastCheckTimestamp = lens _sdiLastCheckTimestamp (\ s a -> s{_sdiLastCheckTimestamp = a}) . mapping _Time
+
+-- | Status of the stack's actual configuration compared to its expected template configuration.      * @DRIFTED@ : The stack differs from its expected template configuration. A stack is considered to have drifted if one or more of its resources have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack differs from its expected template configuration.     * @IN_SYNC@ : The stack's actual configuration matches its expected template configuration.     * @UNKNOWN@ : This value is reserved for future use.
+sdiStackDriftStatus :: Lens' StackDriftInformation StackDriftStatus
+sdiStackDriftStatus = lens _sdiStackDriftStatus (\ s a -> s{_sdiStackDriftStatus = a})
+
+instance FromXML StackDriftInformation where
+        parseXML x
+          = StackDriftInformation' <$>
+              (x .@? "LastCheckTimestamp") <*>
+                (x .@ "StackDriftStatus")
+
+instance Hashable StackDriftInformation where
+
+instance NFData StackDriftInformation where
+
+-- | Contains information about whether the stack's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. A stack is considered to have drifted if one or more of its resources have drifted.
+--
+--
+--
+-- /See:/ 'stackDriftInformationSummary' smart constructor.
+data StackDriftInformationSummary =
+  StackDriftInformationSummary'
+    { _sdisLastCheckTimestamp :: !(Maybe ISO8601)
+    , _sdisStackDriftStatus   :: !StackDriftStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackDriftInformationSummary' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'sdisLastCheckTimestamp' - Most recent time when a drift detection operation was initiated on the stack, or any of its individual resources that support drift detection.
+--
+-- * 'sdisStackDriftStatus' - Status of the stack's actual configuration compared to its expected template configuration.      * @DRIFTED@ : The stack differs from its expected template configuration. A stack is considered to have drifted if one or more of its resources have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack differs from its expected template configuration.     * @IN_SYNC@ : The stack's actual configuration matches its expected template configuration.     * @UNKNOWN@ : This value is reserved for future use.
+stackDriftInformationSummary
+    :: StackDriftStatus -- ^ 'sdisStackDriftStatus'
+    -> StackDriftInformationSummary
+stackDriftInformationSummary pStackDriftStatus_ =
+  StackDriftInformationSummary'
+    { _sdisLastCheckTimestamp = Nothing
+    , _sdisStackDriftStatus = pStackDriftStatus_
+    }
+
+
+-- | Most recent time when a drift detection operation was initiated on the stack, or any of its individual resources that support drift detection.
+sdisLastCheckTimestamp :: Lens' StackDriftInformationSummary (Maybe UTCTime)
+sdisLastCheckTimestamp = lens _sdisLastCheckTimestamp (\ s a -> s{_sdisLastCheckTimestamp = a}) . mapping _Time
+
+-- | Status of the stack's actual configuration compared to its expected template configuration.      * @DRIFTED@ : The stack differs from its expected template configuration. A stack is considered to have drifted if one or more of its resources have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack differs from its expected template configuration.     * @IN_SYNC@ : The stack's actual configuration matches its expected template configuration.     * @UNKNOWN@ : This value is reserved for future use.
+sdisStackDriftStatus :: Lens' StackDriftInformationSummary StackDriftStatus
+sdisStackDriftStatus = lens _sdisStackDriftStatus (\ s a -> s{_sdisStackDriftStatus = a})
+
+instance FromXML StackDriftInformationSummary where
+        parseXML x
+          = StackDriftInformationSummary' <$>
+              (x .@? "LastCheckTimestamp") <*>
+                (x .@ "StackDriftStatus")
+
+instance Hashable StackDriftInformationSummary where
+
+instance NFData StackDriftInformationSummary where
+
 -- | The StackEvent data type.
 --
 --
 --
 -- /See:/ 'stackEvent' smart constructor.
-data StackEvent = StackEvent'
-  { _seLogicalResourceId    :: !(Maybe Text)
-  , _sePhysicalResourceId   :: !(Maybe Text)
-  , _seResourceType         :: !(Maybe Text)
-  , _seResourceStatusReason :: !(Maybe Text)
-  , _seResourceProperties   :: !(Maybe Text)
-  , _seResourceStatus       :: !(Maybe ResourceStatus)
-  , _seClientRequestToken   :: !(Maybe Text)
-  , _seStackId              :: !Text
-  , _seEventId              :: !Text
-  , _seStackName            :: !Text
-  , _seTimestamp            :: !ISO8601
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackEvent =
+  StackEvent'
+    { _seLogicalResourceId    :: !(Maybe Text)
+    , _sePhysicalResourceId   :: !(Maybe Text)
+    , _seResourceType         :: !(Maybe Text)
+    , _seResourceStatusReason :: !(Maybe Text)
+    , _seResourceProperties   :: !(Maybe Text)
+    , _seResourceStatus       :: !(Maybe ResourceStatus)
+    , _seClientRequestToken   :: !(Maybe Text)
+    , _seStackId              :: !Text
+    , _seEventId              :: !Text
+    , _seStackName            :: !Text
+    , _seTimestamp            :: !ISO8601
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackEvent' with the minimum fields required to make a request.
@@ -1115,7 +1664,7 @@ data StackEvent = StackEvent'
 --
 -- * 'sePhysicalResourceId' - The name or unique identifier associated with the physical instance of the resource.
 --
--- * 'seResourceType' - Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- * 'seResourceType' - Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 --
 -- * 'seResourceStatusReason' - Success/failure message associated with the resource.
 --
@@ -1162,7 +1711,7 @@ seLogicalResourceId = lens _seLogicalResourceId (\ s a -> s{_seLogicalResourceId
 sePhysicalResourceId :: Lens' StackEvent (Maybe Text)
 sePhysicalResourceId = lens _sePhysicalResourceId (\ s a -> s{_sePhysicalResourceId = a})
 
--- | Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- | Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 seResourceType :: Lens' StackEvent (Maybe Text)
 seResourceType = lens _seResourceType (\ s a -> s{_seResourceType = a})
 
@@ -1222,15 +1771,20 @@ instance NFData StackEvent where
 --
 --
 -- /See:/ 'stackInstance' smart constructor.
-data StackInstance = StackInstance'
-  { _siStatus             :: !(Maybe StackInstanceStatus)
-  , _siAccount            :: !(Maybe Text)
-  , _siRegion             :: !(Maybe Text)
-  , _siStatusReason       :: !(Maybe Text)
-  , _siStackId            :: !(Maybe Text)
-  , _siParameterOverrides :: !(Maybe [Parameter])
-  , _siStackSetId         :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackInstance =
+  StackInstance'
+    { _siStatus                  :: !(Maybe StackInstanceStatus)
+    , _siLastDriftCheckTimestamp :: !(Maybe ISO8601)
+    , _siAccount                 :: !(Maybe Text)
+    , _siDriftStatus             :: !(Maybe StackDriftStatus)
+    , _siOrganizationalUnitId    :: !(Maybe Text)
+    , _siRegion                  :: !(Maybe Text)
+    , _siStatusReason            :: !(Maybe Text)
+    , _siStackId                 :: !(Maybe Text)
+    , _siParameterOverrides      :: !(Maybe [Parameter])
+    , _siStackSetId              :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackInstance' with the minimum fields required to make a request.
@@ -1239,7 +1793,13 @@ data StackInstance = StackInstance'
 --
 -- * 'siStatus' - The status of the stack instance, in terms of its synchronization with its associated stack set.     * @INOPERABLE@ : A @DeleteStackInstances@ operation has failed and left the stack in an unstable state. Stacks in this state are excluded from further @UpdateStackSet@ operations. You might need to perform a @DeleteStackInstances@ operation, with @RetainStacks@ set to @true@ , to delete the stack instance, and then delete the stack manually.     * @OUTDATED@ : The stack isn't currently up to date with the stack set because:     * The associated stack failed during a @CreateStackSet@ or @UpdateStackSet@ operation.      * The stack was part of a @CreateStackSet@ or @UpdateStackSet@ operation that failed or was stopped before the stack was created or updated.      * @CURRENT@ : The stack is currently up to date with the stack set.
 --
--- * 'siAccount' - The name of the AWS account that the stack instance is associated with.
+-- * 'siLastDriftCheckTimestamp' - Most recent time when CloudFormation performed a drift detection operation on the stack instance. This value will be @NULL@ for any stack instance on which drift detection has not yet been performed.
+--
+-- * 'siAccount' - [Self-managed permissions] The name of the AWS account that the stack instance is associated with.
+--
+-- * 'siDriftStatus' - Status of the stack instance's actual configuration compared to the expected template and parameter configuration of the stack set to which it belongs.      * @DRIFTED@ : The stack differs from the expected template and parameter configuration of the stack set to which it belongs. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack instance differs from its expected stack set configuration.     * @IN_SYNC@ : The stack instance's actual configuration matches its expected stack set configuration.     * @UNKNOWN@ : This value is reserved for future use.
+--
+-- * 'siOrganizationalUnitId' - [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID that the stack instance is associated with.
 --
 -- * 'siRegion' - The name of the AWS region that the stack instance is associated with.
 --
@@ -1255,7 +1815,10 @@ stackInstance
 stackInstance =
   StackInstance'
     { _siStatus = Nothing
+    , _siLastDriftCheckTimestamp = Nothing
     , _siAccount = Nothing
+    , _siDriftStatus = Nothing
+    , _siOrganizationalUnitId = Nothing
     , _siRegion = Nothing
     , _siStatusReason = Nothing
     , _siStackId = Nothing
@@ -1268,9 +1831,21 @@ stackInstance =
 siStatus :: Lens' StackInstance (Maybe StackInstanceStatus)
 siStatus = lens _siStatus (\ s a -> s{_siStatus = a})
 
--- | The name of the AWS account that the stack instance is associated with.
+-- | Most recent time when CloudFormation performed a drift detection operation on the stack instance. This value will be @NULL@ for any stack instance on which drift detection has not yet been performed.
+siLastDriftCheckTimestamp :: Lens' StackInstance (Maybe UTCTime)
+siLastDriftCheckTimestamp = lens _siLastDriftCheckTimestamp (\ s a -> s{_siLastDriftCheckTimestamp = a}) . mapping _Time
+
+-- | [Self-managed permissions] The name of the AWS account that the stack instance is associated with.
 siAccount :: Lens' StackInstance (Maybe Text)
 siAccount = lens _siAccount (\ s a -> s{_siAccount = a})
+
+-- | Status of the stack instance's actual configuration compared to the expected template and parameter configuration of the stack set to which it belongs.      * @DRIFTED@ : The stack differs from the expected template and parameter configuration of the stack set to which it belongs. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack instance differs from its expected stack set configuration.     * @IN_SYNC@ : The stack instance's actual configuration matches its expected stack set configuration.     * @UNKNOWN@ : This value is reserved for future use.
+siDriftStatus :: Lens' StackInstance (Maybe StackDriftStatus)
+siDriftStatus = lens _siDriftStatus (\ s a -> s{_siDriftStatus = a})
+
+-- | [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID that the stack instance is associated with.
+siOrganizationalUnitId :: Lens' StackInstance (Maybe Text)
+siOrganizationalUnitId = lens _siOrganizationalUnitId (\ s a -> s{_siOrganizationalUnitId = a})
 
 -- | The name of the AWS region that the stack instance is associated with.
 siRegion :: Lens' StackInstance (Maybe Text)
@@ -1295,8 +1870,12 @@ siStackSetId = lens _siStackSetId (\ s a -> s{_siStackSetId = a})
 instance FromXML StackInstance where
         parseXML x
           = StackInstance' <$>
-              (x .@? "Status") <*> (x .@? "Account") <*>
-                (x .@? "Region")
+              (x .@? "Status") <*>
+                (x .@? "LastDriftCheckTimestamp")
+                <*> (x .@? "Account")
+                <*> (x .@? "DriftStatus")
+                <*> (x .@? "OrganizationalUnitId")
+                <*> (x .@? "Region")
                 <*> (x .@? "StatusReason")
                 <*> (x .@? "StackId")
                 <*>
@@ -1313,14 +1892,19 @@ instance NFData StackInstance where
 --
 --
 -- /See:/ 'stackInstanceSummary' smart constructor.
-data StackInstanceSummary = StackInstanceSummary'
-  { _sisStatus       :: !(Maybe StackInstanceStatus)
-  , _sisAccount      :: !(Maybe Text)
-  , _sisRegion       :: !(Maybe Text)
-  , _sisStatusReason :: !(Maybe Text)
-  , _sisStackId      :: !(Maybe Text)
-  , _sisStackSetId   :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackInstanceSummary =
+  StackInstanceSummary'
+    { _sisStatus                  :: !(Maybe StackInstanceStatus)
+    , _sisLastDriftCheckTimestamp :: !(Maybe ISO8601)
+    , _sisAccount                 :: !(Maybe Text)
+    , _sisDriftStatus             :: !(Maybe StackDriftStatus)
+    , _sisOrganizationalUnitId    :: !(Maybe Text)
+    , _sisRegion                  :: !(Maybe Text)
+    , _sisStatusReason            :: !(Maybe Text)
+    , _sisStackId                 :: !(Maybe Text)
+    , _sisStackSetId              :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackInstanceSummary' with the minimum fields required to make a request.
@@ -1329,7 +1913,13 @@ data StackInstanceSummary = StackInstanceSummary'
 --
 -- * 'sisStatus' - The status of the stack instance, in terms of its synchronization with its associated stack set.     * @INOPERABLE@ : A @DeleteStackInstances@ operation has failed and left the stack in an unstable state. Stacks in this state are excluded from further @UpdateStackSet@ operations. You might need to perform a @DeleteStackInstances@ operation, with @RetainStacks@ set to @true@ , to delete the stack instance, and then delete the stack manually.     * @OUTDATED@ : The stack isn't currently up to date with the stack set because:     * The associated stack failed during a @CreateStackSet@ or @UpdateStackSet@ operation.      * The stack was part of a @CreateStackSet@ or @UpdateStackSet@ operation that failed or was stopped before the stack was created or updated.      * @CURRENT@ : The stack is currently up to date with the stack set.
 --
--- * 'sisAccount' - The name of the AWS account that the stack instance is associated with.
+-- * 'sisLastDriftCheckTimestamp' - Most recent time when CloudFormation performed a drift detection operation on the stack instance. This value will be @NULL@ for any stack instance on which drift detection has not yet been performed.
+--
+-- * 'sisAccount' - [Self-managed permissions] The name of the AWS account that the stack instance is associated with.
+--
+-- * 'sisDriftStatus' - Status of the stack instance's actual configuration compared to the expected template and parameter configuration of the stack set to which it belongs.      * @DRIFTED@ : The stack differs from the expected template and parameter configuration of the stack set to which it belongs. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack instance differs from its expected stack set configuration.     * @IN_SYNC@ : The stack instance's actual configuration matches its expected stack set configuration.     * @UNKNOWN@ : This value is reserved for future use.
+--
+-- * 'sisOrganizationalUnitId' - [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID that the stack instance is associated with.
 --
 -- * 'sisRegion' - The name of the AWS region that the stack instance is associated with.
 --
@@ -1343,7 +1933,10 @@ stackInstanceSummary
 stackInstanceSummary =
   StackInstanceSummary'
     { _sisStatus = Nothing
+    , _sisLastDriftCheckTimestamp = Nothing
     , _sisAccount = Nothing
+    , _sisDriftStatus = Nothing
+    , _sisOrganizationalUnitId = Nothing
     , _sisRegion = Nothing
     , _sisStatusReason = Nothing
     , _sisStackId = Nothing
@@ -1355,9 +1948,21 @@ stackInstanceSummary =
 sisStatus :: Lens' StackInstanceSummary (Maybe StackInstanceStatus)
 sisStatus = lens _sisStatus (\ s a -> s{_sisStatus = a})
 
--- | The name of the AWS account that the stack instance is associated with.
+-- | Most recent time when CloudFormation performed a drift detection operation on the stack instance. This value will be @NULL@ for any stack instance on which drift detection has not yet been performed.
+sisLastDriftCheckTimestamp :: Lens' StackInstanceSummary (Maybe UTCTime)
+sisLastDriftCheckTimestamp = lens _sisLastDriftCheckTimestamp (\ s a -> s{_sisLastDriftCheckTimestamp = a}) . mapping _Time
+
+-- | [Self-managed permissions] The name of the AWS account that the stack instance is associated with.
 sisAccount :: Lens' StackInstanceSummary (Maybe Text)
 sisAccount = lens _sisAccount (\ s a -> s{_sisAccount = a})
+
+-- | Status of the stack instance's actual configuration compared to the expected template and parameter configuration of the stack set to which it belongs.      * @DRIFTED@ : The stack differs from the expected template and parameter configuration of the stack set to which it belongs. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the stack instance differs from its expected stack set configuration.     * @IN_SYNC@ : The stack instance's actual configuration matches its expected stack set configuration.     * @UNKNOWN@ : This value is reserved for future use.
+sisDriftStatus :: Lens' StackInstanceSummary (Maybe StackDriftStatus)
+sisDriftStatus = lens _sisDriftStatus (\ s a -> s{_sisDriftStatus = a})
+
+-- | [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID that the stack instance is associated with.
+sisOrganizationalUnitId :: Lens' StackInstanceSummary (Maybe Text)
+sisOrganizationalUnitId = lens _sisOrganizationalUnitId (\ s a -> s{_sisOrganizationalUnitId = a})
 
 -- | The name of the AWS region that the stack instance is associated with.
 sisRegion :: Lens' StackInstanceSummary (Maybe Text)
@@ -1378,8 +1983,12 @@ sisStackSetId = lens _sisStackSetId (\ s a -> s{_sisStackSetId = a})
 instance FromXML StackInstanceSummary where
         parseXML x
           = StackInstanceSummary' <$>
-              (x .@? "Status") <*> (x .@? "Account") <*>
-                (x .@? "Region")
+              (x .@? "Status") <*>
+                (x .@? "LastDriftCheckTimestamp")
+                <*> (x .@? "Account")
+                <*> (x .@? "DriftStatus")
+                <*> (x .@? "OrganizationalUnitId")
+                <*> (x .@? "Region")
                 <*> (x .@? "StatusReason")
                 <*> (x .@? "StackId")
                 <*> (x .@? "StackSetId")
@@ -1393,17 +2002,20 @@ instance NFData StackInstanceSummary where
 --
 --
 -- /See:/ 'stackResource' smart constructor.
-data StackResource = StackResource'
-  { _srPhysicalResourceId   :: !(Maybe Text)
-  , _srResourceStatusReason :: !(Maybe Text)
-  , _srStackId              :: !(Maybe Text)
-  , _srDescription          :: !(Maybe Text)
-  , _srStackName            :: !(Maybe Text)
-  , _srLogicalResourceId    :: !Text
-  , _srResourceType         :: !Text
-  , _srTimestamp            :: !ISO8601
-  , _srResourceStatus       :: !ResourceStatus
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackResource =
+  StackResource'
+    { _srPhysicalResourceId   :: !(Maybe Text)
+    , _srResourceStatusReason :: !(Maybe Text)
+    , _srDriftInformation     :: !(Maybe StackResourceDriftInformation)
+    , _srStackId              :: !(Maybe Text)
+    , _srDescription          :: !(Maybe Text)
+    , _srStackName            :: !(Maybe Text)
+    , _srLogicalResourceId    :: !Text
+    , _srResourceType         :: !Text
+    , _srTimestamp            :: !ISO8601
+    , _srResourceStatus       :: !ResourceStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackResource' with the minimum fields required to make a request.
@@ -1414,6 +2026,8 @@ data StackResource = StackResource'
 --
 -- * 'srResourceStatusReason' - Success/failure message associated with the resource.
 --
+-- * 'srDriftInformation' - Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+--
 -- * 'srStackId' - Unique identifier of the stack.
 --
 -- * 'srDescription' - User defined description associated with the resource.
@@ -1422,7 +2036,7 @@ data StackResource = StackResource'
 --
 -- * 'srLogicalResourceId' - The logical name of the resource specified in the template.
 --
--- * 'srResourceType' - Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- * 'srResourceType' - Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 --
 -- * 'srTimestamp' - Time the status was updated.
 --
@@ -1437,6 +2051,7 @@ stackResource pLogicalResourceId_ pResourceType_ pTimestamp_ pResourceStatus_ =
   StackResource'
     { _srPhysicalResourceId = Nothing
     , _srResourceStatusReason = Nothing
+    , _srDriftInformation = Nothing
     , _srStackId = Nothing
     , _srDescription = Nothing
     , _srStackName = Nothing
@@ -1455,6 +2070,10 @@ srPhysicalResourceId = lens _srPhysicalResourceId (\ s a -> s{_srPhysicalResourc
 srResourceStatusReason :: Lens' StackResource (Maybe Text)
 srResourceStatusReason = lens _srResourceStatusReason (\ s a -> s{_srResourceStatusReason = a})
 
+-- | Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+srDriftInformation :: Lens' StackResource (Maybe StackResourceDriftInformation)
+srDriftInformation = lens _srDriftInformation (\ s a -> s{_srDriftInformation = a})
+
 -- | Unique identifier of the stack.
 srStackId :: Lens' StackResource (Maybe Text)
 srStackId = lens _srStackId (\ s a -> s{_srStackId = a})
@@ -1471,7 +2090,7 @@ srStackName = lens _srStackName (\ s a -> s{_srStackName = a})
 srLogicalResourceId :: Lens' StackResource Text
 srLogicalResourceId = lens _srLogicalResourceId (\ s a -> s{_srLogicalResourceId = a})
 
--- | Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- | Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 srResourceType :: Lens' StackResource Text
 srResourceType = lens _srResourceType (\ s a -> s{_srResourceType = a})
 
@@ -1488,6 +2107,7 @@ instance FromXML StackResource where
           = StackResource' <$>
               (x .@? "PhysicalResourceId") <*>
                 (x .@? "ResourceStatusReason")
+                <*> (x .@? "DriftInformation")
                 <*> (x .@? "StackId")
                 <*> (x .@? "Description")
                 <*> (x .@? "StackName")
@@ -1505,109 +2125,120 @@ instance NFData StackResource where
 --
 --
 -- /See:/ 'stackResourceDetail' smart constructor.
-data StackResourceDetail = StackResourceDetail'
-  { _srdPhysicalResourceId   :: !(Maybe Text)
-  , _srdResourceStatusReason :: !(Maybe Text)
-  , _srdMetadata             :: !(Maybe Text)
-  , _srdStackId              :: !(Maybe Text)
-  , _srdDescription          :: !(Maybe Text)
-  , _srdStackName            :: !(Maybe Text)
-  , _srdLogicalResourceId    :: !Text
-  , _srdResourceType         :: !Text
-  , _srdLastUpdatedTimestamp :: !ISO8601
-  , _srdResourceStatus       :: !ResourceStatus
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackResourceDetail =
+  StackResourceDetail'
+    { _sPhysicalResourceId   :: !(Maybe Text)
+    , _sResourceStatusReason :: !(Maybe Text)
+    , _sDriftInformation     :: !(Maybe StackResourceDriftInformation)
+    , _sMetadata             :: !(Maybe Text)
+    , _sStackId              :: !(Maybe Text)
+    , _sDescription          :: !(Maybe Text)
+    , _sStackName            :: !(Maybe Text)
+    , _sLogicalResourceId    :: !Text
+    , _sResourceType         :: !Text
+    , _sLastUpdatedTimestamp :: !ISO8601
+    , _sResourceStatus       :: !ResourceStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackResourceDetail' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'srdPhysicalResourceId' - The name or unique identifier that corresponds to a physical instance ID of a resource supported by AWS CloudFormation.
+-- * 'sPhysicalResourceId' - The name or unique identifier that corresponds to a physical instance ID of a resource supported by AWS CloudFormation.
 --
--- * 'srdResourceStatusReason' - Success/failure message associated with the resource.
+-- * 'sResourceStatusReason' - Success/failure message associated with the resource.
 --
--- * 'srdMetadata' - The content of the @Metadata@ attribute declared for the resource. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html Metadata Attribute> in the AWS CloudFormation User Guide.
+-- * 'sDriftInformation' - Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
 --
--- * 'srdStackId' - Unique identifier of the stack.
+-- * 'sMetadata' - The content of the @Metadata@ attribute declared for the resource. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html Metadata Attribute> in the AWS CloudFormation User Guide.
 --
--- * 'srdDescription' - User defined description associated with the resource.
+-- * 'sStackId' - Unique identifier of the stack.
 --
--- * 'srdStackName' - The name associated with the stack.
+-- * 'sDescription' - User defined description associated with the resource.
 --
--- * 'srdLogicalResourceId' - The logical name of the resource specified in the template.
+-- * 'sStackName' - The name associated with the stack.
 --
--- * 'srdResourceType' - Type of resource. ((For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- * 'sLogicalResourceId' - The logical name of the resource specified in the template.
 --
--- * 'srdLastUpdatedTimestamp' - Time the status was updated.
+-- * 'sResourceType' - Type of resource. ((For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 --
--- * 'srdResourceStatus' - Current status of the resource.
+-- * 'sLastUpdatedTimestamp' - Time the status was updated.
+--
+-- * 'sResourceStatus' - Current status of the resource.
 stackResourceDetail
-    :: Text -- ^ 'srdLogicalResourceId'
-    -> Text -- ^ 'srdResourceType'
-    -> UTCTime -- ^ 'srdLastUpdatedTimestamp'
-    -> ResourceStatus -- ^ 'srdResourceStatus'
+    :: Text -- ^ 'sLogicalResourceId'
+    -> Text -- ^ 'sResourceType'
+    -> UTCTime -- ^ 'sLastUpdatedTimestamp'
+    -> ResourceStatus -- ^ 'sResourceStatus'
     -> StackResourceDetail
 stackResourceDetail pLogicalResourceId_ pResourceType_ pLastUpdatedTimestamp_ pResourceStatus_ =
   StackResourceDetail'
-    { _srdPhysicalResourceId = Nothing
-    , _srdResourceStatusReason = Nothing
-    , _srdMetadata = Nothing
-    , _srdStackId = Nothing
-    , _srdDescription = Nothing
-    , _srdStackName = Nothing
-    , _srdLogicalResourceId = pLogicalResourceId_
-    , _srdResourceType = pResourceType_
-    , _srdLastUpdatedTimestamp = _Time # pLastUpdatedTimestamp_
-    , _srdResourceStatus = pResourceStatus_
+    { _sPhysicalResourceId = Nothing
+    , _sResourceStatusReason = Nothing
+    , _sDriftInformation = Nothing
+    , _sMetadata = Nothing
+    , _sStackId = Nothing
+    , _sDescription = Nothing
+    , _sStackName = Nothing
+    , _sLogicalResourceId = pLogicalResourceId_
+    , _sResourceType = pResourceType_
+    , _sLastUpdatedTimestamp = _Time # pLastUpdatedTimestamp_
+    , _sResourceStatus = pResourceStatus_
     }
 
 
 -- | The name or unique identifier that corresponds to a physical instance ID of a resource supported by AWS CloudFormation.
-srdPhysicalResourceId :: Lens' StackResourceDetail (Maybe Text)
-srdPhysicalResourceId = lens _srdPhysicalResourceId (\ s a -> s{_srdPhysicalResourceId = a})
+sPhysicalResourceId :: Lens' StackResourceDetail (Maybe Text)
+sPhysicalResourceId = lens _sPhysicalResourceId (\ s a -> s{_sPhysicalResourceId = a})
 
 -- | Success/failure message associated with the resource.
-srdResourceStatusReason :: Lens' StackResourceDetail (Maybe Text)
-srdResourceStatusReason = lens _srdResourceStatusReason (\ s a -> s{_srdResourceStatusReason = a})
+sResourceStatusReason :: Lens' StackResourceDetail (Maybe Text)
+sResourceStatusReason = lens _sResourceStatusReason (\ s a -> s{_sResourceStatusReason = a})
 
--- | The content of the @Metadata@ attribute declared for the resource. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html Metadata Attribute> in the AWS CloudFormation User Guide.
-srdMetadata :: Lens' StackResourceDetail (Maybe Text)
-srdMetadata = lens _srdMetadata (\ s a -> s{_srdMetadata = a})
+-- | Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+sDriftInformation :: Lens' StackResourceDetail (Maybe StackResourceDriftInformation)
+sDriftInformation = lens _sDriftInformation (\ s a -> s{_sDriftInformation = a})
+
+-- | The content of the @Metadata@ attribute declared for the resource. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html Metadata Attribute> in the AWS CloudFormation User Guide.
+sMetadata :: Lens' StackResourceDetail (Maybe Text)
+sMetadata = lens _sMetadata (\ s a -> s{_sMetadata = a})
 
 -- | Unique identifier of the stack.
-srdStackId :: Lens' StackResourceDetail (Maybe Text)
-srdStackId = lens _srdStackId (\ s a -> s{_srdStackId = a})
+sStackId :: Lens' StackResourceDetail (Maybe Text)
+sStackId = lens _sStackId (\ s a -> s{_sStackId = a})
 
 -- | User defined description associated with the resource.
-srdDescription :: Lens' StackResourceDetail (Maybe Text)
-srdDescription = lens _srdDescription (\ s a -> s{_srdDescription = a})
+sDescription :: Lens' StackResourceDetail (Maybe Text)
+sDescription = lens _sDescription (\ s a -> s{_sDescription = a})
 
 -- | The name associated with the stack.
-srdStackName :: Lens' StackResourceDetail (Maybe Text)
-srdStackName = lens _srdStackName (\ s a -> s{_srdStackName = a})
+sStackName :: Lens' StackResourceDetail (Maybe Text)
+sStackName = lens _sStackName (\ s a -> s{_sStackName = a})
 
 -- | The logical name of the resource specified in the template.
-srdLogicalResourceId :: Lens' StackResourceDetail Text
-srdLogicalResourceId = lens _srdLogicalResourceId (\ s a -> s{_srdLogicalResourceId = a})
+sLogicalResourceId :: Lens' StackResourceDetail Text
+sLogicalResourceId = lens _sLogicalResourceId (\ s a -> s{_sLogicalResourceId = a})
 
--- | Type of resource. ((For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
-srdResourceType :: Lens' StackResourceDetail Text
-srdResourceType = lens _srdResourceType (\ s a -> s{_srdResourceType = a})
+-- | Type of resource. ((For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+sResourceType :: Lens' StackResourceDetail Text
+sResourceType = lens _sResourceType (\ s a -> s{_sResourceType = a})
 
 -- | Time the status was updated.
-srdLastUpdatedTimestamp :: Lens' StackResourceDetail UTCTime
-srdLastUpdatedTimestamp = lens _srdLastUpdatedTimestamp (\ s a -> s{_srdLastUpdatedTimestamp = a}) . _Time
+sLastUpdatedTimestamp :: Lens' StackResourceDetail UTCTime
+sLastUpdatedTimestamp = lens _sLastUpdatedTimestamp (\ s a -> s{_sLastUpdatedTimestamp = a}) . _Time
 
 -- | Current status of the resource.
-srdResourceStatus :: Lens' StackResourceDetail ResourceStatus
-srdResourceStatus = lens _srdResourceStatus (\ s a -> s{_srdResourceStatus = a})
+sResourceStatus :: Lens' StackResourceDetail ResourceStatus
+sResourceStatus = lens _sResourceStatus (\ s a -> s{_sResourceStatus = a})
 
 instance FromXML StackResourceDetail where
         parseXML x
           = StackResourceDetail' <$>
               (x .@? "PhysicalResourceId") <*>
                 (x .@? "ResourceStatusReason")
+                <*> (x .@? "DriftInformation")
                 <*> (x .@? "Metadata")
                 <*> (x .@? "StackId")
                 <*> (x .@? "Description")
@@ -1621,19 +2252,254 @@ instance Hashable StackResourceDetail where
 
 instance NFData StackResourceDetail where
 
+-- | Contains the drift information for a resource that has been checked for drift. This includes actual and expected property values for resources in which AWS CloudFormation has detected drift. Only resource properties explicitly defined in the stack template are checked for drift. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+--
+--
+-- Resources that do not currently support drift detection cannot be checked. For a list of resources that support drift detection, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html Resources that Support Drift Detection> .
+--
+-- Use 'DetectStackResourceDrift' to detect drift on individual resources, or 'DetectStackDrift' to detect drift on all resources in a given stack that support drift detection.
+--
+--
+-- /See:/ 'stackResourceDrift' smart constructor.
+data StackResourceDrift =
+  StackResourceDrift'
+    { _srdActualProperties :: !(Maybe Text)
+    , _srdPhysicalResourceId :: !(Maybe Text)
+    , _srdPhysicalResourceIdContext :: !(Maybe [PhysicalResourceIdContextKeyValuePair])
+    , _srdPropertyDifferences :: !(Maybe [PropertyDifference])
+    , _srdExpectedProperties :: !(Maybe Text)
+    , _srdStackId :: !Text
+    , _srdLogicalResourceId :: !Text
+    , _srdResourceType :: !Text
+    , _srdStackResourceDriftStatus :: !StackResourceDriftStatus
+    , _srdTimestamp :: !ISO8601
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackResourceDrift' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'srdActualProperties' - A JSON structure containing the actual property values of the stack resource. For resources whose @StackResourceDriftStatus@ is @DELETED@ , this structure will not be present.
+--
+-- * 'srdPhysicalResourceId' - The name or unique identifier that corresponds to a physical instance ID of a resource supported by AWS CloudFormation.
+--
+-- * 'srdPhysicalResourceIdContext' - Context information that enables AWS CloudFormation to uniquely identify a resource. AWS CloudFormation uses context key-value pairs in cases where a resource's logical and physical IDs are not enough to uniquely identify that resource. Each context key-value pair specifies a unique resource that contains the targeted resource.
+--
+-- * 'srdPropertyDifferences' - A collection of the resource properties whose actual values differ from their expected values. These will be present only for resources whose @StackResourceDriftStatus@ is @MODIFIED@ .
+--
+-- * 'srdExpectedProperties' - A JSON structure containing the expected property values of the stack resource, as defined in the stack template and any values specified as template parameters.  For resources whose @StackResourceDriftStatus@ is @DELETED@ , this structure will not be present.
+--
+-- * 'srdStackId' - The ID of the stack.
+--
+-- * 'srdLogicalResourceId' - The logical name of the resource specified in the template.
+--
+-- * 'srdResourceType' - The type of the resource.
+--
+-- * 'srdStackResourceDriftStatus' - Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected template configuration because the resource has been deleted.     * @MODIFIED@ : One or more resource properties differ from their expected values (as defined in the stack template and any values specified as template parameters).     * @IN_SYNC@ : The resources's actual configuration matches its expected template configuration.     * @NOT_CHECKED@ : AWS CloudFormation does not currently return this value.
+--
+-- * 'srdTimestamp' - Time at which AWS CloudFormation performed drift detection on the stack resource.
+stackResourceDrift
+    :: Text -- ^ 'srdStackId'
+    -> Text -- ^ 'srdLogicalResourceId'
+    -> Text -- ^ 'srdResourceType'
+    -> StackResourceDriftStatus -- ^ 'srdStackResourceDriftStatus'
+    -> UTCTime -- ^ 'srdTimestamp'
+    -> StackResourceDrift
+stackResourceDrift pStackId_ pLogicalResourceId_ pResourceType_ pStackResourceDriftStatus_ pTimestamp_ =
+  StackResourceDrift'
+    { _srdActualProperties = Nothing
+    , _srdPhysicalResourceId = Nothing
+    , _srdPhysicalResourceIdContext = Nothing
+    , _srdPropertyDifferences = Nothing
+    , _srdExpectedProperties = Nothing
+    , _srdStackId = pStackId_
+    , _srdLogicalResourceId = pLogicalResourceId_
+    , _srdResourceType = pResourceType_
+    , _srdStackResourceDriftStatus = pStackResourceDriftStatus_
+    , _srdTimestamp = _Time # pTimestamp_
+    }
+
+
+-- | A JSON structure containing the actual property values of the stack resource. For resources whose @StackResourceDriftStatus@ is @DELETED@ , this structure will not be present.
+srdActualProperties :: Lens' StackResourceDrift (Maybe Text)
+srdActualProperties = lens _srdActualProperties (\ s a -> s{_srdActualProperties = a})
+
+-- | The name or unique identifier that corresponds to a physical instance ID of a resource supported by AWS CloudFormation.
+srdPhysicalResourceId :: Lens' StackResourceDrift (Maybe Text)
+srdPhysicalResourceId = lens _srdPhysicalResourceId (\ s a -> s{_srdPhysicalResourceId = a})
+
+-- | Context information that enables AWS CloudFormation to uniquely identify a resource. AWS CloudFormation uses context key-value pairs in cases where a resource's logical and physical IDs are not enough to uniquely identify that resource. Each context key-value pair specifies a unique resource that contains the targeted resource.
+srdPhysicalResourceIdContext :: Lens' StackResourceDrift [PhysicalResourceIdContextKeyValuePair]
+srdPhysicalResourceIdContext = lens _srdPhysicalResourceIdContext (\ s a -> s{_srdPhysicalResourceIdContext = a}) . _Default . _Coerce
+
+-- | A collection of the resource properties whose actual values differ from their expected values. These will be present only for resources whose @StackResourceDriftStatus@ is @MODIFIED@ .
+srdPropertyDifferences :: Lens' StackResourceDrift [PropertyDifference]
+srdPropertyDifferences = lens _srdPropertyDifferences (\ s a -> s{_srdPropertyDifferences = a}) . _Default . _Coerce
+
+-- | A JSON structure containing the expected property values of the stack resource, as defined in the stack template and any values specified as template parameters.  For resources whose @StackResourceDriftStatus@ is @DELETED@ , this structure will not be present.
+srdExpectedProperties :: Lens' StackResourceDrift (Maybe Text)
+srdExpectedProperties = lens _srdExpectedProperties (\ s a -> s{_srdExpectedProperties = a})
+
+-- | The ID of the stack.
+srdStackId :: Lens' StackResourceDrift Text
+srdStackId = lens _srdStackId (\ s a -> s{_srdStackId = a})
+
+-- | The logical name of the resource specified in the template.
+srdLogicalResourceId :: Lens' StackResourceDrift Text
+srdLogicalResourceId = lens _srdLogicalResourceId (\ s a -> s{_srdLogicalResourceId = a})
+
+-- | The type of the resource.
+srdResourceType :: Lens' StackResourceDrift Text
+srdResourceType = lens _srdResourceType (\ s a -> s{_srdResourceType = a})
+
+-- | Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected template configuration because the resource has been deleted.     * @MODIFIED@ : One or more resource properties differ from their expected values (as defined in the stack template and any values specified as template parameters).     * @IN_SYNC@ : The resources's actual configuration matches its expected template configuration.     * @NOT_CHECKED@ : AWS CloudFormation does not currently return this value.
+srdStackResourceDriftStatus :: Lens' StackResourceDrift StackResourceDriftStatus
+srdStackResourceDriftStatus = lens _srdStackResourceDriftStatus (\ s a -> s{_srdStackResourceDriftStatus = a})
+
+-- | Time at which AWS CloudFormation performed drift detection on the stack resource.
+srdTimestamp :: Lens' StackResourceDrift UTCTime
+srdTimestamp = lens _srdTimestamp (\ s a -> s{_srdTimestamp = a}) . _Time
+
+instance FromXML StackResourceDrift where
+        parseXML x
+          = StackResourceDrift' <$>
+              (x .@? "ActualProperties") <*>
+                (x .@? "PhysicalResourceId")
+                <*>
+                (x .@? "PhysicalResourceIdContext" .!@ mempty >>=
+                   may (parseXMLList "member"))
+                <*>
+                (x .@? "PropertyDifferences" .!@ mempty >>=
+                   may (parseXMLList "member"))
+                <*> (x .@? "ExpectedProperties")
+                <*> (x .@ "StackId")
+                <*> (x .@ "LogicalResourceId")
+                <*> (x .@ "ResourceType")
+                <*> (x .@ "StackResourceDriftStatus")
+                <*> (x .@ "Timestamp")
+
+instance Hashable StackResourceDrift where
+
+instance NFData StackResourceDrift where
+
+-- | Contains information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration.
+--
+--
+--
+-- /See:/ 'stackResourceDriftInformation' smart constructor.
+data StackResourceDriftInformation =
+  StackResourceDriftInformation'
+    { _srdiLastCheckTimestamp       :: !(Maybe ISO8601)
+    , _srdiStackResourceDriftStatus :: !StackResourceDriftStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackResourceDriftInformation' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'srdiLastCheckTimestamp' - When AWS CloudFormation last checked if the resource had drifted from its expected configuration.
+--
+-- * 'srdiStackResourceDriftStatus' - Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected configuration in that it has been deleted.     * @MODIFIED@ : The resource differs from its expected configuration.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the resource differs from its expected configuration. Any resources that do not currently support drift detection have a status of @NOT_CHECKED@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html Resources that Support Drift Detection> .      * @IN_SYNC@ : The resources's actual configuration matches its expected configuration.
+stackResourceDriftInformation
+    :: StackResourceDriftStatus -- ^ 'srdiStackResourceDriftStatus'
+    -> StackResourceDriftInformation
+stackResourceDriftInformation pStackResourceDriftStatus_ =
+  StackResourceDriftInformation'
+    { _srdiLastCheckTimestamp = Nothing
+    , _srdiStackResourceDriftStatus = pStackResourceDriftStatus_
+    }
+
+
+-- | When AWS CloudFormation last checked if the resource had drifted from its expected configuration.
+srdiLastCheckTimestamp :: Lens' StackResourceDriftInformation (Maybe UTCTime)
+srdiLastCheckTimestamp = lens _srdiLastCheckTimestamp (\ s a -> s{_srdiLastCheckTimestamp = a}) . mapping _Time
+
+-- | Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected configuration in that it has been deleted.     * @MODIFIED@ : The resource differs from its expected configuration.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the resource differs from its expected configuration. Any resources that do not currently support drift detection have a status of @NOT_CHECKED@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html Resources that Support Drift Detection> .      * @IN_SYNC@ : The resources's actual configuration matches its expected configuration.
+srdiStackResourceDriftStatus :: Lens' StackResourceDriftInformation StackResourceDriftStatus
+srdiStackResourceDriftStatus = lens _srdiStackResourceDriftStatus (\ s a -> s{_srdiStackResourceDriftStatus = a})
+
+instance FromXML StackResourceDriftInformation where
+        parseXML x
+          = StackResourceDriftInformation' <$>
+              (x .@? "LastCheckTimestamp") <*>
+                (x .@ "StackResourceDriftStatus")
+
+instance Hashable StackResourceDriftInformation where
+
+instance NFData StackResourceDriftInformation where
+
+-- | Summarizes information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration.
+--
+--
+--
+-- /See:/ 'stackResourceDriftInformationSummary' smart constructor.
+data StackResourceDriftInformationSummary =
+  StackResourceDriftInformationSummary'
+    { _srdisLastCheckTimestamp       :: !(Maybe ISO8601)
+    , _srdisStackResourceDriftStatus :: !StackResourceDriftStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackResourceDriftInformationSummary' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'srdisLastCheckTimestamp' - When AWS CloudFormation last checked if the resource had drifted from its expected configuration.
+--
+-- * 'srdisStackResourceDriftStatus' - Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected configuration in that it has been deleted.     * @MODIFIED@ : The resource differs from its expected configuration.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the resource differs from its expected configuration. Any resources that do not currently support drift detection have a status of @NOT_CHECKED@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html Resources that Support Drift Detection> . If you performed an 'ContinueUpdateRollback' operation on a stack, any resources included in @ResourcesToSkip@ will also have a status of @NOT_CHECKED@ . For more information on skipping resources during rollback operations, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html Continue Rolling Back an Update> in the AWS CloudFormation User Guide.     * @IN_SYNC@ : The resources's actual configuration matches its expected configuration.
+stackResourceDriftInformationSummary
+    :: StackResourceDriftStatus -- ^ 'srdisStackResourceDriftStatus'
+    -> StackResourceDriftInformationSummary
+stackResourceDriftInformationSummary pStackResourceDriftStatus_ =
+  StackResourceDriftInformationSummary'
+    { _srdisLastCheckTimestamp = Nothing
+    , _srdisStackResourceDriftStatus = pStackResourceDriftStatus_
+    }
+
+
+-- | When AWS CloudFormation last checked if the resource had drifted from its expected configuration.
+srdisLastCheckTimestamp :: Lens' StackResourceDriftInformationSummary (Maybe UTCTime)
+srdisLastCheckTimestamp = lens _srdisLastCheckTimestamp (\ s a -> s{_srdisLastCheckTimestamp = a}) . mapping _Time
+
+-- | Status of the resource's actual configuration compared to its expected configuration     * @DELETED@ : The resource differs from its expected configuration in that it has been deleted.     * @MODIFIED@ : The resource differs from its expected configuration.     * @NOT_CHECKED@ : AWS CloudFormation has not checked if the resource differs from its expected configuration. Any resources that do not currently support drift detection have a status of @NOT_CHECKED@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html Resources that Support Drift Detection> . If you performed an 'ContinueUpdateRollback' operation on a stack, any resources included in @ResourcesToSkip@ will also have a status of @NOT_CHECKED@ . For more information on skipping resources during rollback operations, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html Continue Rolling Back an Update> in the AWS CloudFormation User Guide.     * @IN_SYNC@ : The resources's actual configuration matches its expected configuration.
+srdisStackResourceDriftStatus :: Lens' StackResourceDriftInformationSummary StackResourceDriftStatus
+srdisStackResourceDriftStatus = lens _srdisStackResourceDriftStatus (\ s a -> s{_srdisStackResourceDriftStatus = a})
+
+instance FromXML StackResourceDriftInformationSummary
+         where
+        parseXML x
+          = StackResourceDriftInformationSummary' <$>
+              (x .@? "LastCheckTimestamp") <*>
+                (x .@ "StackResourceDriftStatus")
+
+instance Hashable
+           StackResourceDriftInformationSummary
+         where
+
+instance NFData StackResourceDriftInformationSummary
+         where
+
 -- | Contains high-level information about the specified stack resource.
 --
 --
 --
 -- /See:/ 'stackResourceSummary' smart constructor.
-data StackResourceSummary = StackResourceSummary'
-  { _srsPhysicalResourceId   :: !(Maybe Text)
-  , _srsResourceStatusReason :: !(Maybe Text)
-  , _srsLogicalResourceId    :: !Text
-  , _srsResourceType         :: !Text
-  , _srsLastUpdatedTimestamp :: !ISO8601
-  , _srsResourceStatus       :: !ResourceStatus
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackResourceSummary =
+  StackResourceSummary'
+    { _srsPhysicalResourceId   :: !(Maybe Text)
+    , _srsResourceStatusReason :: !(Maybe Text)
+    , _srsDriftInformation     :: !(Maybe StackResourceDriftInformationSummary)
+    , _srsLogicalResourceId    :: !Text
+    , _srsResourceType         :: !Text
+    , _srsLastUpdatedTimestamp :: !ISO8601
+    , _srsResourceStatus       :: !ResourceStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackResourceSummary' with the minimum fields required to make a request.
@@ -1644,9 +2510,11 @@ data StackResourceSummary = StackResourceSummary'
 --
 -- * 'srsResourceStatusReason' - Success/failure message associated with the resource.
 --
+-- * 'srsDriftInformation' - Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+--
 -- * 'srsLogicalResourceId' - The logical name of the resource specified in the template.
 --
--- * 'srsResourceType' - Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- * 'srsResourceType' - Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 --
 -- * 'srsLastUpdatedTimestamp' - Time the status was updated.
 --
@@ -1661,6 +2529,7 @@ stackResourceSummary pLogicalResourceId_ pResourceType_ pLastUpdatedTimestamp_ p
   StackResourceSummary'
     { _srsPhysicalResourceId = Nothing
     , _srsResourceStatusReason = Nothing
+    , _srsDriftInformation = Nothing
     , _srsLogicalResourceId = pLogicalResourceId_
     , _srsResourceType = pResourceType_
     , _srsLastUpdatedTimestamp = _Time # pLastUpdatedTimestamp_
@@ -1676,11 +2545,15 @@ srsPhysicalResourceId = lens _srsPhysicalResourceId (\ s a -> s{_srsPhysicalReso
 srsResourceStatusReason :: Lens' StackResourceSummary (Maybe Text)
 srsResourceStatusReason = lens _srsResourceStatusReason (\ s a -> s{_srsResourceStatusReason = a})
 
+-- | Information about whether the resource's actual configuration differs, or has /drifted/ , from its expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+srsDriftInformation :: Lens' StackResourceSummary (Maybe StackResourceDriftInformationSummary)
+srsDriftInformation = lens _srsDriftInformation (\ s a -> s{_srsDriftInformation = a})
+
 -- | The logical name of the resource specified in the template.
 srsLogicalResourceId :: Lens' StackResourceSummary Text
 srsLogicalResourceId = lens _srsLogicalResourceId (\ s a -> s{_srsLogicalResourceId = a})
 
--- | Type of resource. (For more information, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
+-- | Type of resource. (For more information, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html AWS Resource Types Reference> in the AWS CloudFormation User Guide.)
 srsResourceType :: Lens' StackResourceSummary Text
 srsResourceType = lens _srsResourceType (\ s a -> s{_srsResourceType = a})
 
@@ -1697,6 +2570,7 @@ instance FromXML StackResourceSummary where
           = StackResourceSummary' <$>
               (x .@? "PhysicalResourceId") <*>
                 (x .@? "ResourceStatusReason")
+                <*> (x .@? "DriftInformation")
                 <*> (x .@ "LogicalResourceId")
                 <*> (x .@ "ResourceType")
                 <*> (x .@ "LastUpdatedTimestamp")
@@ -1711,29 +2585,44 @@ instance NFData StackResourceSummary where
 --
 --
 -- /See:/ 'stackSet' smart constructor.
-data StackSet = StackSet'
-  { _ssStatus                :: !(Maybe StackSetStatus)
-  , _ssAdministrationRoleARN :: !(Maybe Text)
-  , _ssStackSetARN           :: !(Maybe Text)
-  , _ssParameters            :: !(Maybe [Parameter])
-  , _ssTemplateBody          :: !(Maybe Text)
-  , _ssStackSetName          :: !(Maybe Text)
-  , _ssDescription           :: !(Maybe Text)
-  , _ssCapabilities          :: !(Maybe [Capability])
-  , _ssTags                  :: !(Maybe [Tag])
-  , _ssStackSetId            :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSet =
+  StackSet'
+    { _ssStackSetDriftDetectionDetails :: !(Maybe StackSetDriftDetectionDetails)
+    , _ssStatus                        :: !(Maybe StackSetStatus)
+    , _ssAdministrationRoleARN         :: !(Maybe Text)
+    , _ssAutoDeployment                :: !(Maybe AutoDeployment)
+    , _ssOrganizationalUnitIds         :: !(Maybe [Text])
+    , _ssStackSetARN                   :: !(Maybe Text)
+    , _ssPermissionModel               :: !(Maybe PermissionModels)
+    , _ssParameters                    :: !(Maybe [Parameter])
+    , _ssTemplateBody                  :: !(Maybe Text)
+    , _ssStackSetName                  :: !(Maybe Text)
+    , _ssDescription                   :: !(Maybe Text)
+    , _ssCapabilities                  :: !(Maybe [Capability])
+    , _ssTags                          :: !(Maybe [Tag])
+    , _ssStackSetId                    :: !(Maybe Text)
+    , _ssExecutionRoleName             :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSet' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
+-- * 'ssStackSetDriftDetectionDetails' - Detailed information about the drift status of the stack set. For stack sets, contains information about the last /completed/ drift operation performed on the stack set. Information about drift operations currently in progress is not included.
+--
 -- * 'ssStatus' - The status of the stack set.
 --
--- * 'ssAdministrationRoleARN' - The Amazon Resource Number (ARN) of the IAM role used to create or update the stack set. Use customized administrator roles to control which users or groups can manage specific stack sets within the same administrator account. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html Define Permissions for Multiple Administrators> in the /AWS CloudFormation User Guide/ .
+-- * 'ssAdministrationRoleARN' - The Amazon Resource Number (ARN) of the IAM role used to create or update the stack set. Use customized administrator roles to control which users or groups can manage specific stack sets within the same administrator account. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html Prerequisites: Granting Permissions for Stack Set Operations> in the /AWS CloudFormation User Guide/ .
+--
+-- * 'ssAutoDeployment' - [@Service-managed@ permissions] Describes whether StackSets automatically deploys to AWS Organizations accounts that are added to a target organization or organizational unit (OU).
+--
+-- * 'ssOrganizationalUnitIds' - [@Service-managed@ permissions] The organization root ID or organizational unit (OUs) IDs to which stacks in your stack set have been deployed.
 --
 -- * 'ssStackSetARN' - The Amazon Resource Number (ARN) of the stack set.
+--
+-- * 'ssPermissionModel' - Describes how the IAM roles required for stack set operations are created.     * With @self-managed@ permissions, you must create the administrator and execution roles required to deploy to target accounts. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html Grant Self-Managed Stack Set Permissions> .     * With @service-managed@ permissions, StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-service-managed.html Grant Service-Managed Stack Set Permissions> .
 --
 -- * 'ssParameters' - A list of input parameters for a stack set.
 --
@@ -1743,18 +2632,24 @@ data StackSet = StackSet'
 --
 -- * 'ssDescription' - A description of the stack set that you specify when the stack set is created or updated.
 --
--- * 'ssCapabilities' - The capabilities that are allowed in the stack set. Some stack set templates might include resources that can affect permissions in your AWS account—for example, by creating new AWS Identity and Access Management (IAM) users. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates.>
+-- * 'ssCapabilities' - The capabilities that are allowed in the stack set. Some stack set templates might include resources that can affect permissions in your AWS account—for example, by creating new AWS Identity and Access Management (IAM) users. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates.>
 --
 -- * 'ssTags' - A list of tags that specify information about the stack set. A maximum number of 50 tags can be specified.
 --
 -- * 'ssStackSetId' - The ID of the stack set.
+--
+-- * 'ssExecutionRoleName' - The name of the IAM execution role used to create or update the stack set.  Use customized execution roles to control which stack resources users and groups can include in their stack sets.
 stackSet
     :: StackSet
 stackSet =
   StackSet'
-    { _ssStatus = Nothing
+    { _ssStackSetDriftDetectionDetails = Nothing
+    , _ssStatus = Nothing
     , _ssAdministrationRoleARN = Nothing
+    , _ssAutoDeployment = Nothing
+    , _ssOrganizationalUnitIds = Nothing
     , _ssStackSetARN = Nothing
+    , _ssPermissionModel = Nothing
     , _ssParameters = Nothing
     , _ssTemplateBody = Nothing
     , _ssStackSetName = Nothing
@@ -1762,20 +2657,37 @@ stackSet =
     , _ssCapabilities = Nothing
     , _ssTags = Nothing
     , _ssStackSetId = Nothing
+    , _ssExecutionRoleName = Nothing
     }
 
+
+-- | Detailed information about the drift status of the stack set. For stack sets, contains information about the last /completed/ drift operation performed on the stack set. Information about drift operations currently in progress is not included.
+ssStackSetDriftDetectionDetails :: Lens' StackSet (Maybe StackSetDriftDetectionDetails)
+ssStackSetDriftDetectionDetails = lens _ssStackSetDriftDetectionDetails (\ s a -> s{_ssStackSetDriftDetectionDetails = a})
 
 -- | The status of the stack set.
 ssStatus :: Lens' StackSet (Maybe StackSetStatus)
 ssStatus = lens _ssStatus (\ s a -> s{_ssStatus = a})
 
--- | The Amazon Resource Number (ARN) of the IAM role used to create or update the stack set. Use customized administrator roles to control which users or groups can manage specific stack sets within the same administrator account. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html Define Permissions for Multiple Administrators> in the /AWS CloudFormation User Guide/ .
+-- | The Amazon Resource Number (ARN) of the IAM role used to create or update the stack set. Use customized administrator roles to control which users or groups can manage specific stack sets within the same administrator account. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html Prerequisites: Granting Permissions for Stack Set Operations> in the /AWS CloudFormation User Guide/ .
 ssAdministrationRoleARN :: Lens' StackSet (Maybe Text)
 ssAdministrationRoleARN = lens _ssAdministrationRoleARN (\ s a -> s{_ssAdministrationRoleARN = a})
+
+-- | [@Service-managed@ permissions] Describes whether StackSets automatically deploys to AWS Organizations accounts that are added to a target organization or organizational unit (OU).
+ssAutoDeployment :: Lens' StackSet (Maybe AutoDeployment)
+ssAutoDeployment = lens _ssAutoDeployment (\ s a -> s{_ssAutoDeployment = a})
+
+-- | [@Service-managed@ permissions] The organization root ID or organizational unit (OUs) IDs to which stacks in your stack set have been deployed.
+ssOrganizationalUnitIds :: Lens' StackSet [Text]
+ssOrganizationalUnitIds = lens _ssOrganizationalUnitIds (\ s a -> s{_ssOrganizationalUnitIds = a}) . _Default . _Coerce
 
 -- | The Amazon Resource Number (ARN) of the stack set.
 ssStackSetARN :: Lens' StackSet (Maybe Text)
 ssStackSetARN = lens _ssStackSetARN (\ s a -> s{_ssStackSetARN = a})
+
+-- | Describes how the IAM roles required for stack set operations are created.     * With @self-managed@ permissions, you must create the administrator and execution roles required to deploy to target accounts. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html Grant Self-Managed Stack Set Permissions> .     * With @service-managed@ permissions, StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-service-managed.html Grant Service-Managed Stack Set Permissions> .
+ssPermissionModel :: Lens' StackSet (Maybe PermissionModels)
+ssPermissionModel = lens _ssPermissionModel (\ s a -> s{_ssPermissionModel = a})
 
 -- | A list of input parameters for a stack set.
 ssParameters :: Lens' StackSet [Parameter]
@@ -1793,7 +2705,7 @@ ssStackSetName = lens _ssStackSetName (\ s a -> s{_ssStackSetName = a})
 ssDescription :: Lens' StackSet (Maybe Text)
 ssDescription = lens _ssDescription (\ s a -> s{_ssDescription = a})
 
--- | The capabilities that are allowed in the stack set. Some stack set templates might include resources that can affect permissions in your AWS account—for example, by creating new AWS Identity and Access Management (IAM) users. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates.>
+-- | The capabilities that are allowed in the stack set. Some stack set templates might include resources that can affect permissions in your AWS account—for example, by creating new AWS Identity and Access Management (IAM) users. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates.>
 ssCapabilities :: Lens' StackSet [Capability]
 ssCapabilities = lens _ssCapabilities (\ s a -> s{_ssCapabilities = a}) . _Default . _Coerce
 
@@ -1805,11 +2717,22 @@ ssTags = lens _ssTags (\ s a -> s{_ssTags = a}) . _Default . _Coerce
 ssStackSetId :: Lens' StackSet (Maybe Text)
 ssStackSetId = lens _ssStackSetId (\ s a -> s{_ssStackSetId = a})
 
+-- | The name of the IAM execution role used to create or update the stack set.  Use customized execution roles to control which stack resources users and groups can include in their stack sets.
+ssExecutionRoleName :: Lens' StackSet (Maybe Text)
+ssExecutionRoleName = lens _ssExecutionRoleName (\ s a -> s{_ssExecutionRoleName = a})
+
 instance FromXML StackSet where
         parseXML x
           = StackSet' <$>
-              (x .@? "Status") <*> (x .@? "AdministrationRoleARN")
+              (x .@? "StackSetDriftDetectionDetails") <*>
+                (x .@? "Status")
+                <*> (x .@? "AdministrationRoleARN")
+                <*> (x .@? "AutoDeployment")
+                <*>
+                (x .@? "OrganizationalUnitIds" .!@ mempty >>=
+                   may (parseXMLList "member"))
                 <*> (x .@? "StackSetARN")
+                <*> (x .@? "PermissionModel")
                 <*>
                 (x .@? "Parameters" .!@ mempty >>=
                    may (parseXMLList "member"))
@@ -1823,34 +2746,149 @@ instance FromXML StackSet where
                 (x .@? "Tags" .!@ mempty >>=
                    may (parseXMLList "member"))
                 <*> (x .@? "StackSetId")
+                <*> (x .@? "ExecutionRoleName")
 
 instance Hashable StackSet where
 
 instance NFData StackSet where
+
+-- | Detailed information about the drift status of the stack set.
+--
+--
+-- For stack sets, contains information about the last /completed/ drift operation performed on the stack set. Information about drift operations in-progress is not included.
+--
+-- For stack set operations, includes information about drift operations currently being performed on the stack set.
+--
+-- For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-drift.html Detecting Unmanaged Changes in Stack Sets> in the /AWS CloudFormation User Guide/ .
+--
+--
+-- /See:/ 'stackSetDriftDetectionDetails' smart constructor.
+data StackSetDriftDetectionDetails =
+  StackSetDriftDetectionDetails'
+    { _ssdddLastDriftCheckTimestamp :: !(Maybe ISO8601)
+    , _ssdddTotalStackInstancesCount :: !(Maybe Nat)
+    , _ssdddInProgressStackInstancesCount :: !(Maybe Nat)
+    , _ssdddDriftedStackInstancesCount :: !(Maybe Nat)
+    , _ssdddDriftDetectionStatus :: !(Maybe StackSetDriftDetectionStatus)
+    , _ssdddDriftStatus :: !(Maybe StackSetDriftStatus)
+    , _ssdddFailedStackInstancesCount :: !(Maybe Nat)
+    , _ssdddInSyncStackInstancesCount :: !(Maybe Nat)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'StackSetDriftDetectionDetails' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'ssdddLastDriftCheckTimestamp' - Most recent time when CloudFormation performed a drift detection operation on the stack set. This value will be @NULL@ for any stack set on which drift detection has not yet been performed.
+--
+-- * 'ssdddTotalStackInstancesCount' - The total number of stack instances belonging to this stack set.  The total number of stack instances is equal to the total of:     * Stack instances that match the stack set configuration.      * Stack instances that have drifted from the stack set configuration.      * Stack instances where the drift detection operation has failed.     * Stack instances currently being checked for drift.
+--
+-- * 'ssdddInProgressStackInstancesCount' - The number of stack instances that are currently being checked for drift.
+--
+-- * 'ssdddDriftedStackInstancesCount' - The number of stack instances that have drifted from the expected template and parameter configuration of the stack set. A stack instance is considered to have drifted if one or more of the resources in the associated stack do not match their expected configuration.
+--
+-- * 'ssdddDriftDetectionStatus' - The status of the stack set drift detection operation.     * @COMPLETED@ : The drift detection operation completed without failing on any stack instances.     * @FAILED@ : The drift detection operation exceeded the specified failure tolerance.      * @PARTIAL_SUCCESS@ : The drift detection operation completed without exceeding the failure tolerance for the operation.     * @IN_PROGRESS@ : The drift detection operation is currently being performed.     * @STOPPED@ : The user has cancelled the drift detection operation.
+--
+-- * 'ssdddDriftStatus' - Status of the stack set's actual configuration compared to its expected template and parameter configuration. A stack set is considered to have drifted if one or more of its stack instances have drifted from their expected template and parameter configuration.     * @DRIFTED@ : One or more of the stack instances belonging to the stack set stack differs from the expected template and parameter configuration. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked the stack set for drift.     * @IN_SYNC@ : All of the stack instances belonging to the stack set stack match from the expected template and parameter configuration.
+--
+-- * 'ssdddFailedStackInstancesCount' - The number of stack instances for which the drift detection operation failed.
+--
+-- * 'ssdddInSyncStackInstancesCount' - The number of stack instances which match the expected template and parameter configuration of the stack set.
+stackSetDriftDetectionDetails
+    :: StackSetDriftDetectionDetails
+stackSetDriftDetectionDetails =
+  StackSetDriftDetectionDetails'
+    { _ssdddLastDriftCheckTimestamp = Nothing
+    , _ssdddTotalStackInstancesCount = Nothing
+    , _ssdddInProgressStackInstancesCount = Nothing
+    , _ssdddDriftedStackInstancesCount = Nothing
+    , _ssdddDriftDetectionStatus = Nothing
+    , _ssdddDriftStatus = Nothing
+    , _ssdddFailedStackInstancesCount = Nothing
+    , _ssdddInSyncStackInstancesCount = Nothing
+    }
+
+
+-- | Most recent time when CloudFormation performed a drift detection operation on the stack set. This value will be @NULL@ for any stack set on which drift detection has not yet been performed.
+ssdddLastDriftCheckTimestamp :: Lens' StackSetDriftDetectionDetails (Maybe UTCTime)
+ssdddLastDriftCheckTimestamp = lens _ssdddLastDriftCheckTimestamp (\ s a -> s{_ssdddLastDriftCheckTimestamp = a}) . mapping _Time
+
+-- | The total number of stack instances belonging to this stack set.  The total number of stack instances is equal to the total of:     * Stack instances that match the stack set configuration.      * Stack instances that have drifted from the stack set configuration.      * Stack instances where the drift detection operation has failed.     * Stack instances currently being checked for drift.
+ssdddTotalStackInstancesCount :: Lens' StackSetDriftDetectionDetails (Maybe Natural)
+ssdddTotalStackInstancesCount = lens _ssdddTotalStackInstancesCount (\ s a -> s{_ssdddTotalStackInstancesCount = a}) . mapping _Nat
+
+-- | The number of stack instances that are currently being checked for drift.
+ssdddInProgressStackInstancesCount :: Lens' StackSetDriftDetectionDetails (Maybe Natural)
+ssdddInProgressStackInstancesCount = lens _ssdddInProgressStackInstancesCount (\ s a -> s{_ssdddInProgressStackInstancesCount = a}) . mapping _Nat
+
+-- | The number of stack instances that have drifted from the expected template and parameter configuration of the stack set. A stack instance is considered to have drifted if one or more of the resources in the associated stack do not match their expected configuration.
+ssdddDriftedStackInstancesCount :: Lens' StackSetDriftDetectionDetails (Maybe Natural)
+ssdddDriftedStackInstancesCount = lens _ssdddDriftedStackInstancesCount (\ s a -> s{_ssdddDriftedStackInstancesCount = a}) . mapping _Nat
+
+-- | The status of the stack set drift detection operation.     * @COMPLETED@ : The drift detection operation completed without failing on any stack instances.     * @FAILED@ : The drift detection operation exceeded the specified failure tolerance.      * @PARTIAL_SUCCESS@ : The drift detection operation completed without exceeding the failure tolerance for the operation.     * @IN_PROGRESS@ : The drift detection operation is currently being performed.     * @STOPPED@ : The user has cancelled the drift detection operation.
+ssdddDriftDetectionStatus :: Lens' StackSetDriftDetectionDetails (Maybe StackSetDriftDetectionStatus)
+ssdddDriftDetectionStatus = lens _ssdddDriftDetectionStatus (\ s a -> s{_ssdddDriftDetectionStatus = a})
+
+-- | Status of the stack set's actual configuration compared to its expected template and parameter configuration. A stack set is considered to have drifted if one or more of its stack instances have drifted from their expected template and parameter configuration.     * @DRIFTED@ : One or more of the stack instances belonging to the stack set stack differs from the expected template and parameter configuration. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked the stack set for drift.     * @IN_SYNC@ : All of the stack instances belonging to the stack set stack match from the expected template and parameter configuration.
+ssdddDriftStatus :: Lens' StackSetDriftDetectionDetails (Maybe StackSetDriftStatus)
+ssdddDriftStatus = lens _ssdddDriftStatus (\ s a -> s{_ssdddDriftStatus = a})
+
+-- | The number of stack instances for which the drift detection operation failed.
+ssdddFailedStackInstancesCount :: Lens' StackSetDriftDetectionDetails (Maybe Natural)
+ssdddFailedStackInstancesCount = lens _ssdddFailedStackInstancesCount (\ s a -> s{_ssdddFailedStackInstancesCount = a}) . mapping _Nat
+
+-- | The number of stack instances which match the expected template and parameter configuration of the stack set.
+ssdddInSyncStackInstancesCount :: Lens' StackSetDriftDetectionDetails (Maybe Natural)
+ssdddInSyncStackInstancesCount = lens _ssdddInSyncStackInstancesCount (\ s a -> s{_ssdddInSyncStackInstancesCount = a}) . mapping _Nat
+
+instance FromXML StackSetDriftDetectionDetails where
+        parseXML x
+          = StackSetDriftDetectionDetails' <$>
+              (x .@? "LastDriftCheckTimestamp") <*>
+                (x .@? "TotalStackInstancesCount")
+                <*> (x .@? "InProgressStackInstancesCount")
+                <*> (x .@? "DriftedStackInstancesCount")
+                <*> (x .@? "DriftDetectionStatus")
+                <*> (x .@? "DriftStatus")
+                <*> (x .@? "FailedStackInstancesCount")
+                <*> (x .@? "InSyncStackInstancesCount")
+
+instance Hashable StackSetDriftDetectionDetails where
+
+instance NFData StackSetDriftDetectionDetails where
 
 -- | The structure that contains information about a stack set operation.
 --
 --
 --
 -- /See:/ 'stackSetOperation' smart constructor.
-data StackSetOperation = StackSetOperation'
-  { _ssoStatus                :: !(Maybe StackSetOperationStatus)
-  , _ssoAdministrationRoleARN :: !(Maybe Text)
-  , _ssoAction                :: !(Maybe StackSetOperationAction)
-  , _ssoEndTimestamp          :: !(Maybe ISO8601)
-  , _ssoCreationTimestamp     :: !(Maybe ISO8601)
-  , _ssoOperationPreferences  :: !(Maybe StackSetOperationPreferences)
-  , _ssoOperationId           :: !(Maybe Text)
-  , _ssoRetainStacks          :: !(Maybe Bool)
-  , _ssoStackSetId            :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSetOperation =
+  StackSetOperation'
+    { _ssoStackSetDriftDetectionDetails :: !(Maybe StackSetDriftDetectionDetails)
+    , _ssoStatus :: !(Maybe StackSetOperationStatus)
+    , _ssoAdministrationRoleARN :: !(Maybe Text)
+    , _ssoAction :: !(Maybe StackSetOperationAction)
+    , _ssoEndTimestamp :: !(Maybe ISO8601)
+    , _ssoCreationTimestamp :: !(Maybe ISO8601)
+    , _ssoOperationPreferences :: !(Maybe StackSetOperationPreferences)
+    , _ssoOperationId :: !(Maybe Text)
+    , _ssoRetainStacks :: !(Maybe Bool)
+    , _ssoDeploymentTargets :: !(Maybe DeploymentTargets)
+    , _ssoStackSetId :: !(Maybe Text)
+    , _ssoExecutionRoleName :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSetOperation' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'ssoStatus' - The status of the operation.      * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
+-- * 'ssoStackSetDriftDetectionDetails' - Detailed information about the drift status of the stack set. This includes information about drift operations currently being performed on the stack set. this information will only be present for stack set operations whose @Action@ type is @DETECT_DRIFT@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-drift.html Detecting Unmanaged Changes in Stack Sets> in the AWS CloudFormation User Guide.
+--
+-- * 'ssoStatus' - The status of the operation.      * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @QUEUED@ : [Service-managed permissions] For automatic deployments that require a sequence of operations. The operation is queued to be performed. For more information, see the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-status-codes stack set operation status codes> in the AWS CloudFormation User Guide.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
 --
 -- * 'ssoAdministrationRoleARN' - The Amazon Resource Number (ARN) of the IAM role used to perform this stack set operation.  Use customized administrator roles to control which users or groups can manage specific stack sets within the same administrator account. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html Define Permissions for Multiple Administrators> in the /AWS CloudFormation User Guide/ .
 --
@@ -1866,12 +2904,17 @@ data StackSetOperation = StackSetOperation'
 --
 -- * 'ssoRetainStacks' - For stack set operations of action type @DELETE@ , specifies whether to remove the stack instances from the specified stack set, but doesn't delete the stacks. You can't reassociate a retained stack, or add an existing, saved stack to a new stack set.
 --
+-- * 'ssoDeploymentTargets' - [@Service-managed@ permissions] The AWS Organizations accounts affected by the stack operation.
+--
 -- * 'ssoStackSetId' - The ID of the stack set.
+--
+-- * 'ssoExecutionRoleName' - The name of the IAM execution role used to create or update the stack set. Use customized execution roles to control which stack resources users and groups can include in their stack sets.
 stackSetOperation
     :: StackSetOperation
 stackSetOperation =
   StackSetOperation'
-    { _ssoStatus = Nothing
+    { _ssoStackSetDriftDetectionDetails = Nothing
+    , _ssoStatus = Nothing
     , _ssoAdministrationRoleARN = Nothing
     , _ssoAction = Nothing
     , _ssoEndTimestamp = Nothing
@@ -1879,11 +2922,17 @@ stackSetOperation =
     , _ssoOperationPreferences = Nothing
     , _ssoOperationId = Nothing
     , _ssoRetainStacks = Nothing
+    , _ssoDeploymentTargets = Nothing
     , _ssoStackSetId = Nothing
+    , _ssoExecutionRoleName = Nothing
     }
 
 
--- | The status of the operation.      * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
+-- | Detailed information about the drift status of the stack set. This includes information about drift operations currently being performed on the stack set. this information will only be present for stack set operations whose @Action@ type is @DETECT_DRIFT@ . For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-drift.html Detecting Unmanaged Changes in Stack Sets> in the AWS CloudFormation User Guide.
+ssoStackSetDriftDetectionDetails :: Lens' StackSetOperation (Maybe StackSetDriftDetectionDetails)
+ssoStackSetDriftDetectionDetails = lens _ssoStackSetDriftDetectionDetails (\ s a -> s{_ssoStackSetDriftDetectionDetails = a})
+
+-- | The status of the operation.      * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @QUEUED@ : [Service-managed permissions] For automatic deployments that require a sequence of operations. The operation is queued to be performed. For more information, see the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-status-codes stack set operation status codes> in the AWS CloudFormation User Guide.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
 ssoStatus :: Lens' StackSetOperation (Maybe StackSetOperationStatus)
 ssoStatus = lens _ssoStatus (\ s a -> s{_ssoStatus = a})
 
@@ -1915,21 +2964,33 @@ ssoOperationId = lens _ssoOperationId (\ s a -> s{_ssoOperationId = a})
 ssoRetainStacks :: Lens' StackSetOperation (Maybe Bool)
 ssoRetainStacks = lens _ssoRetainStacks (\ s a -> s{_ssoRetainStacks = a})
 
+-- | [@Service-managed@ permissions] The AWS Organizations accounts affected by the stack operation.
+ssoDeploymentTargets :: Lens' StackSetOperation (Maybe DeploymentTargets)
+ssoDeploymentTargets = lens _ssoDeploymentTargets (\ s a -> s{_ssoDeploymentTargets = a})
+
 -- | The ID of the stack set.
 ssoStackSetId :: Lens' StackSetOperation (Maybe Text)
 ssoStackSetId = lens _ssoStackSetId (\ s a -> s{_ssoStackSetId = a})
 
+-- | The name of the IAM execution role used to create or update the stack set. Use customized execution roles to control which stack resources users and groups can include in their stack sets.
+ssoExecutionRoleName :: Lens' StackSetOperation (Maybe Text)
+ssoExecutionRoleName = lens _ssoExecutionRoleName (\ s a -> s{_ssoExecutionRoleName = a})
+
 instance FromXML StackSetOperation where
         parseXML x
           = StackSetOperation' <$>
-              (x .@? "Status") <*> (x .@? "AdministrationRoleARN")
+              (x .@? "StackSetDriftDetectionDetails") <*>
+                (x .@? "Status")
+                <*> (x .@? "AdministrationRoleARN")
                 <*> (x .@? "Action")
                 <*> (x .@? "EndTimestamp")
                 <*> (x .@? "CreationTimestamp")
                 <*> (x .@? "OperationPreferences")
                 <*> (x .@? "OperationId")
                 <*> (x .@? "RetainStacks")
+                <*> (x .@? "DeploymentTargets")
                 <*> (x .@? "StackSetId")
+                <*> (x .@? "ExecutionRoleName")
 
 instance Hashable StackSetOperation where
 
@@ -1938,17 +2999,19 @@ instance NFData StackSetOperation where
 -- | The user-specified preferences for how AWS CloudFormation performs a stack set operation.
 --
 --
--- For more information on maximum concurrent accounts and failure tolerance, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
+-- For more information on maximum concurrent accounts and failure tolerance, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
 --
 --
 -- /See:/ 'stackSetOperationPreferences' smart constructor.
-data StackSetOperationPreferences = StackSetOperationPreferences'
-  { _ssopRegionOrder                :: !(Maybe [Text])
-  , _ssopMaxConcurrentCount         :: !(Maybe Nat)
-  , _ssopMaxConcurrentPercentage    :: !(Maybe Nat)
-  , _ssopFailureToleranceCount      :: !(Maybe Nat)
-  , _ssopFailureTolerancePercentage :: !(Maybe Nat)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSetOperationPreferences =
+  StackSetOperationPreferences'
+    { _ssopRegionOrder                :: !(Maybe [Text])
+    , _ssopMaxConcurrentCount         :: !(Maybe Nat)
+    , _ssopMaxConcurrentPercentage    :: !(Maybe Nat)
+    , _ssopFailureToleranceCount      :: !(Maybe Nat)
+    , _ssopFailureTolerancePercentage :: !(Maybe Nat)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSetOperationPreferences' with the minimum fields required to make a request.
@@ -2028,13 +3091,16 @@ instance ToQuery StackSetOperationPreferences where
 --
 --
 -- /See:/ 'stackSetOperationResultSummary' smart constructor.
-data StackSetOperationResultSummary = StackSetOperationResultSummary'
-  { _ssorsStatus            :: !(Maybe StackSetOperationResultStatus)
-  , _ssorsAccount           :: !(Maybe Text)
-  , _ssorsAccountGateResult :: !(Maybe AccountGateResult)
-  , _ssorsRegion            :: !(Maybe Text)
-  , _ssorsStatusReason      :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSetOperationResultSummary =
+  StackSetOperationResultSummary'
+    { _ssorsStatus               :: !(Maybe StackSetOperationResultStatus)
+    , _ssorsAccount              :: !(Maybe Text)
+    , _ssorsAccountGateResult    :: !(Maybe AccountGateResult)
+    , _ssorsOrganizationalUnitId :: !(Maybe Text)
+    , _ssorsRegion               :: !(Maybe Text)
+    , _ssorsStatusReason         :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSetOperationResultSummary' with the minimum fields required to make a request.
@@ -2043,9 +3109,11 @@ data StackSetOperationResultSummary = StackSetOperationResultSummary'
 --
 -- * 'ssorsStatus' - The result status of the stack set operation for the given account in the given region.     * @CANCELLED@ : The operation in the specified account and region has been cancelled. This is either because a user has stopped the stack set operation, or because the failure tolerance of the stack set operation has been exceeded.     * @FAILED@ : The operation in the specified account and region failed.  If the stack set operation fails in enough accounts within a region, the failure tolerance for the stack set operation as a whole might be exceeded.      * @RUNNING@ : The operation in the specified account and region is currently in progress.     * @PENDING@ : The operation in the specified account and region has yet to start.      * @SUCCEEDED@ : The operation in the specified account and region completed successfully.
 --
--- * 'ssorsAccount' - The name of the AWS account for this operation result.
+-- * 'ssorsAccount' - [Self-managed permissions] The name of the AWS account for this operation result.
 --
 -- * 'ssorsAccountGateResult' - The results of the account gate function AWS CloudFormation invokes, if present, before proceeding with stack set operations in an account
+--
+-- * 'ssorsOrganizationalUnitId' - [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID for this operation result.
 --
 -- * 'ssorsRegion' - The name of the AWS region for this operation result.
 --
@@ -2057,6 +3125,7 @@ stackSetOperationResultSummary =
     { _ssorsStatus = Nothing
     , _ssorsAccount = Nothing
     , _ssorsAccountGateResult = Nothing
+    , _ssorsOrganizationalUnitId = Nothing
     , _ssorsRegion = Nothing
     , _ssorsStatusReason = Nothing
     }
@@ -2066,13 +3135,17 @@ stackSetOperationResultSummary =
 ssorsStatus :: Lens' StackSetOperationResultSummary (Maybe StackSetOperationResultStatus)
 ssorsStatus = lens _ssorsStatus (\ s a -> s{_ssorsStatus = a})
 
--- | The name of the AWS account for this operation result.
+-- | [Self-managed permissions] The name of the AWS account for this operation result.
 ssorsAccount :: Lens' StackSetOperationResultSummary (Maybe Text)
 ssorsAccount = lens _ssorsAccount (\ s a -> s{_ssorsAccount = a})
 
 -- | The results of the account gate function AWS CloudFormation invokes, if present, before proceeding with stack set operations in an account
 ssorsAccountGateResult :: Lens' StackSetOperationResultSummary (Maybe AccountGateResult)
 ssorsAccountGateResult = lens _ssorsAccountGateResult (\ s a -> s{_ssorsAccountGateResult = a})
+
+-- | [@Service-managed@ permissions] The organization root ID or organizational unit (OU) ID for this operation result.
+ssorsOrganizationalUnitId :: Lens' StackSetOperationResultSummary (Maybe Text)
+ssorsOrganizationalUnitId = lens _ssorsOrganizationalUnitId (\ s a -> s{_ssorsOrganizationalUnitId = a})
 
 -- | The name of the AWS region for this operation result.
 ssorsRegion :: Lens' StackSetOperationResultSummary (Maybe Text)
@@ -2087,6 +3160,7 @@ instance FromXML StackSetOperationResultSummary where
           = StackSetOperationResultSummary' <$>
               (x .@? "Status") <*> (x .@? "Account") <*>
                 (x .@? "AccountGateResult")
+                <*> (x .@? "OrganizationalUnitId")
                 <*> (x .@? "Region")
                 <*> (x .@? "StatusReason")
 
@@ -2100,20 +3174,22 @@ instance NFData StackSetOperationResultSummary where
 --
 --
 -- /See:/ 'stackSetOperationSummary' smart constructor.
-data StackSetOperationSummary = StackSetOperationSummary'
-  { _ssosStatus            :: !(Maybe StackSetOperationStatus)
-  , _ssosAction            :: !(Maybe StackSetOperationAction)
-  , _ssosEndTimestamp      :: !(Maybe ISO8601)
-  , _ssosCreationTimestamp :: !(Maybe ISO8601)
-  , _ssosOperationId       :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSetOperationSummary =
+  StackSetOperationSummary'
+    { _ssosStatus            :: !(Maybe StackSetOperationStatus)
+    , _ssosAction            :: !(Maybe StackSetOperationAction)
+    , _ssosEndTimestamp      :: !(Maybe ISO8601)
+    , _ssosCreationTimestamp :: !(Maybe ISO8601)
+    , _ssosOperationId       :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSetOperationSummary' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'ssosStatus' - The overall status of the operation.     * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
+-- * 'ssosStatus' - The overall status of the operation.     * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @QUEUED@ : [Service-managed permissions] For automatic deployments that require a sequence of operations. The operation is queued to be performed. For more information, see the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-status-codes stack set operation status codes> in the AWS CloudFormation User Guide.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
 --
 -- * 'ssosAction' - The type of operation: @CREATE@ , @UPDATE@ , or @DELETE@ . Create and delete operations affect only the specified stack instances that are associated with the specified stack set. Update operations affect both the stack set itself as well as /all/ associated stack set instances.
 --
@@ -2134,7 +3210,7 @@ stackSetOperationSummary =
     }
 
 
--- | The overall status of the operation.     * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
+-- | The overall status of the operation.     * @FAILED@ : The operation exceeded the specified failure tolerance. The failure tolerance value that you've set for an operation is applied for each region during stack create and update operations. If the number of failed stacks within a region exceeds the failure tolerance, the status of the operation in the region is set to @FAILED@ . This in turn sets the status of the operation as a whole to @FAILED@ , and AWS CloudFormation cancels the operation in any remaining regions.     * @QUEUED@ : [Service-managed permissions] For automatic deployments that require a sequence of operations. The operation is queued to be performed. For more information, see the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-status-codes stack set operation status codes> in the AWS CloudFormation User Guide.     * @RUNNING@ : The operation is currently being performed.     * @STOPPED@ : The user has cancelled the operation.     * @STOPPING@ : The operation is in the process of stopping, at user request.      * @SUCCEEDED@ : The operation completed creating or updating all the specified stacks without exceeding the failure tolerance for the operation.
 ssosStatus :: Lens' StackSetOperationSummary (Maybe StackSetOperationStatus)
 ssosStatus = lens _ssosStatus (\ s a -> s{_ssosStatus = a})
 
@@ -2171,12 +3247,18 @@ instance NFData StackSetOperationSummary where
 --
 --
 -- /See:/ 'stackSetSummary' smart constructor.
-data StackSetSummary = StackSetSummary'
-  { _sssStatus       :: !(Maybe StackSetStatus)
-  , _sssStackSetName :: !(Maybe Text)
-  , _sssDescription  :: !(Maybe Text)
-  , _sssStackSetId   :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSetSummary =
+  StackSetSummary'
+    { _sssStatus                  :: !(Maybe StackSetStatus)
+    , _sssLastDriftCheckTimestamp :: !(Maybe ISO8601)
+    , _sssAutoDeployment          :: !(Maybe AutoDeployment)
+    , _sssDriftStatus             :: !(Maybe StackDriftStatus)
+    , _sssPermissionModel         :: !(Maybe PermissionModels)
+    , _sssStackSetName            :: !(Maybe Text)
+    , _sssDescription             :: !(Maybe Text)
+    , _sssStackSetId              :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSetSummary' with the minimum fields required to make a request.
@@ -2184,6 +3266,14 @@ data StackSetSummary = StackSetSummary'
 -- Use one of the following lenses to modify other fields as desired:
 --
 -- * 'sssStatus' - The status of the stack set.
+--
+-- * 'sssLastDriftCheckTimestamp' - Most recent time when CloudFormation performed a drift detection operation on the stack set. This value will be @NULL@ for any stack set on which drift detection has not yet been performed.
+--
+-- * 'sssAutoDeployment' - [@Service-managed@ permissions] Describes whether StackSets automatically deploys to AWS Organizations accounts that are added to a target organizational unit (OU).
+--
+-- * 'sssDriftStatus' - Status of the stack set's actual configuration compared to its expected template and parameter configuration. A stack set is considered to have drifted if one or more of its stack instances have drifted from their expected template and parameter configuration.     * @DRIFTED@ : One or more of the stack instances belonging to the stack set stack differs from the expected template and parameter configuration. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked the stack set for drift.     * @IN_SYNC@ : All of the stack instances belonging to the stack set stack match from the expected template and parameter configuration.     * @UNKNOWN@ : This value is reserved for future use.
+--
+-- * 'sssPermissionModel' - Describes how the IAM roles required for stack set operations are created.     * With @self-managed@ permissions, you must create the administrator and execution roles required to deploy to target accounts. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html Grant Self-Managed Stack Set Permissions> .     * With @service-managed@ permissions, StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-service-managed.html Grant Service-Managed Stack Set Permissions> .
 --
 -- * 'sssStackSetName' - The name of the stack set.
 --
@@ -2195,6 +3285,10 @@ stackSetSummary
 stackSetSummary =
   StackSetSummary'
     { _sssStatus = Nothing
+    , _sssLastDriftCheckTimestamp = Nothing
+    , _sssAutoDeployment = Nothing
+    , _sssDriftStatus = Nothing
+    , _sssPermissionModel = Nothing
     , _sssStackSetName = Nothing
     , _sssDescription = Nothing
     , _sssStackSetId = Nothing
@@ -2204,6 +3298,22 @@ stackSetSummary =
 -- | The status of the stack set.
 sssStatus :: Lens' StackSetSummary (Maybe StackSetStatus)
 sssStatus = lens _sssStatus (\ s a -> s{_sssStatus = a})
+
+-- | Most recent time when CloudFormation performed a drift detection operation on the stack set. This value will be @NULL@ for any stack set on which drift detection has not yet been performed.
+sssLastDriftCheckTimestamp :: Lens' StackSetSummary (Maybe UTCTime)
+sssLastDriftCheckTimestamp = lens _sssLastDriftCheckTimestamp (\ s a -> s{_sssLastDriftCheckTimestamp = a}) . mapping _Time
+
+-- | [@Service-managed@ permissions] Describes whether StackSets automatically deploys to AWS Organizations accounts that are added to a target organizational unit (OU).
+sssAutoDeployment :: Lens' StackSetSummary (Maybe AutoDeployment)
+sssAutoDeployment = lens _sssAutoDeployment (\ s a -> s{_sssAutoDeployment = a})
+
+-- | Status of the stack set's actual configuration compared to its expected template and parameter configuration. A stack set is considered to have drifted if one or more of its stack instances have drifted from their expected template and parameter configuration.     * @DRIFTED@ : One or more of the stack instances belonging to the stack set stack differs from the expected template and parameter configuration. A stack instance is considered to have drifted if one or more of the resources in the associated stack have drifted.     * @NOT_CHECKED@ : AWS CloudFormation has not checked the stack set for drift.     * @IN_SYNC@ : All of the stack instances belonging to the stack set stack match from the expected template and parameter configuration.     * @UNKNOWN@ : This value is reserved for future use.
+sssDriftStatus :: Lens' StackSetSummary (Maybe StackDriftStatus)
+sssDriftStatus = lens _sssDriftStatus (\ s a -> s{_sssDriftStatus = a})
+
+-- | Describes how the IAM roles required for stack set operations are created.     * With @self-managed@ permissions, you must create the administrator and execution roles required to deploy to target accounts. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html Grant Self-Managed Stack Set Permissions> .     * With @service-managed@ permissions, StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-service-managed.html Grant Service-Managed Stack Set Permissions> .
+sssPermissionModel :: Lens' StackSetSummary (Maybe PermissionModels)
+sssPermissionModel = lens _sssPermissionModel (\ s a -> s{_sssPermissionModel = a})
 
 -- | The name of the stack set.
 sssStackSetName :: Lens' StackSetSummary (Maybe Text)
@@ -2220,8 +3330,13 @@ sssStackSetId = lens _sssStackSetId (\ s a -> s{_sssStackSetId = a})
 instance FromXML StackSetSummary where
         parseXML x
           = StackSetSummary' <$>
-              (x .@? "Status") <*> (x .@? "StackSetName") <*>
-                (x .@? "Description")
+              (x .@? "Status") <*>
+                (x .@? "LastDriftCheckTimestamp")
+                <*> (x .@? "AutoDeployment")
+                <*> (x .@? "DriftStatus")
+                <*> (x .@? "PermissionModel")
+                <*> (x .@? "StackSetName")
+                <*> (x .@? "Description")
                 <*> (x .@? "StackSetId")
 
 instance Hashable StackSetSummary where
@@ -2233,18 +3348,21 @@ instance NFData StackSetSummary where
 --
 --
 -- /See:/ 'stackSummary' smart constructor.
-data StackSummary = StackSummary'
-  { _ssLastUpdatedTime     :: !(Maybe ISO8601)
-  , _ssRootId              :: !(Maybe Text)
-  , _ssStackStatusReason   :: !(Maybe Text)
-  , _ssTemplateDescription :: !(Maybe Text)
-  , _ssDeletionTime        :: !(Maybe ISO8601)
-  , _ssStackId             :: !(Maybe Text)
-  , _ssParentId            :: !(Maybe Text)
-  , _ssStackName           :: !Text
-  , _ssCreationTime        :: !ISO8601
-  , _ssStackStatus         :: !StackStatus
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data StackSummary =
+  StackSummary'
+    { _ssLastUpdatedTime     :: !(Maybe ISO8601)
+    , _ssRootId              :: !(Maybe Text)
+    , _ssStackStatusReason   :: !(Maybe Text)
+    , _ssTemplateDescription :: !(Maybe Text)
+    , _ssDriftInformation    :: !(Maybe StackDriftInformationSummary)
+    , _ssDeletionTime        :: !(Maybe ISO8601)
+    , _ssStackId             :: !(Maybe Text)
+    , _ssParentId            :: !(Maybe Text)
+    , _ssStackName           :: !Text
+    , _ssCreationTime        :: !ISO8601
+    , _ssStackStatus         :: !StackStatus
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'StackSummary' with the minimum fields required to make a request.
@@ -2253,11 +3371,13 @@ data StackSummary = StackSummary'
 --
 -- * 'ssLastUpdatedTime' - The time the stack was last updated. This field will only be returned if the stack has been updated at least once.
 --
--- * 'ssRootId' - For nested stacks--stacks created as resources for another stack--the stack ID of the the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
+-- * 'ssRootId' - For nested stacks--stacks created as resources for another stack--the stack ID of the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
 --
 -- * 'ssStackStatusReason' - Success/Failure message associated with the stack status.
 --
 -- * 'ssTemplateDescription' - The template description of the template used to create the stack.
+--
+-- * 'ssDriftInformation' - Summarizes information on whether a stack's actual configuration differs, or has /drifted/ , from it's expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
 --
 -- * 'ssDeletionTime' - The time the stack was deleted.
 --
@@ -2281,6 +3401,7 @@ stackSummary pStackName_ pCreationTime_ pStackStatus_ =
     , _ssRootId = Nothing
     , _ssStackStatusReason = Nothing
     , _ssTemplateDescription = Nothing
+    , _ssDriftInformation = Nothing
     , _ssDeletionTime = Nothing
     , _ssStackId = Nothing
     , _ssParentId = Nothing
@@ -2294,7 +3415,7 @@ stackSummary pStackName_ pCreationTime_ pStackStatus_ =
 ssLastUpdatedTime :: Lens' StackSummary (Maybe UTCTime)
 ssLastUpdatedTime = lens _ssLastUpdatedTime (\ s a -> s{_ssLastUpdatedTime = a}) . mapping _Time
 
--- | For nested stacks--stacks created as resources for another stack--the stack ID of the the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
+-- | For nested stacks--stacks created as resources for another stack--the stack ID of the top-level stack to which the nested stack ultimately belongs. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html Working with Nested Stacks> in the /AWS CloudFormation User Guide/ .
 ssRootId :: Lens' StackSummary (Maybe Text)
 ssRootId = lens _ssRootId (\ s a -> s{_ssRootId = a})
 
@@ -2305,6 +3426,10 @@ ssStackStatusReason = lens _ssStackStatusReason (\ s a -> s{_ssStackStatusReason
 -- | The template description of the template used to create the stack.
 ssTemplateDescription :: Lens' StackSummary (Maybe Text)
 ssTemplateDescription = lens _ssTemplateDescription (\ s a -> s{_ssTemplateDescription = a})
+
+-- | Summarizes information on whether a stack's actual configuration differs, or has /drifted/ , from it's expected configuration, as defined in the stack template and any values specified as template parameters. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html Detecting Unregulated Configuration Changes to Stacks and Resources> .
+ssDriftInformation :: Lens' StackSummary (Maybe StackDriftInformationSummary)
+ssDriftInformation = lens _ssDriftInformation (\ s a -> s{_ssDriftInformation = a})
 
 -- | The time the stack was deleted.
 ssDeletionTime :: Lens' StackSummary (Maybe UTCTime)
@@ -2336,6 +3461,7 @@ instance FromXML StackSummary where
               (x .@? "LastUpdatedTime") <*> (x .@? "RootId") <*>
                 (x .@? "StackStatusReason")
                 <*> (x .@? "TemplateDescription")
+                <*> (x .@? "DriftInformation")
                 <*> (x .@? "DeletionTime")
                 <*> (x .@? "StackId")
                 <*> (x .@? "ParentId")
@@ -2352,10 +3478,12 @@ instance NFData StackSummary where
 --
 --
 -- /See:/ 'tag' smart constructor.
-data Tag = Tag'
-  { _tagKey   :: !Text
-  , _tagValue :: !Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data Tag =
+  Tag'
+    { _tagKey   :: !Text
+    , _tagValue :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'Tag' with the minimum fields required to make a request.
@@ -2396,12 +3524,14 @@ instance ToQuery Tag where
 --
 --
 -- /See:/ 'templateParameter' smart constructor.
-data TemplateParameter = TemplateParameter'
-  { _tpParameterKey :: !(Maybe Text)
-  , _tpDefaultValue :: !(Maybe Text)
-  , _tpNoEcho       :: !(Maybe Bool)
-  , _tpDescription  :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data TemplateParameter =
+  TemplateParameter'
+    { _tpParameterKey :: !(Maybe Text)
+    , _tpDefaultValue :: !(Maybe Text)
+    , _tpNoEcho       :: !(Maybe Bool)
+    , _tpDescription  :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'TemplateParameter' with the minimum fields required to make a request.
@@ -2452,3 +3582,167 @@ instance FromXML TemplateParameter where
 instance Hashable TemplateParameter where
 
 instance NFData TemplateParameter where
+
+-- | Contains summary information about the specified CloudFormation type.
+--
+--
+--
+-- /See:/ 'typeSummary' smart constructor.
+data TypeSummary =
+  TypeSummary'
+    { _tsLastUpdated      :: !(Maybe ISO8601)
+    , _tsTypeName         :: !(Maybe Text)
+    , _tsDefaultVersionId :: !(Maybe Text)
+    , _tsTypeARN          :: !(Maybe Text)
+    , _tsType             :: !(Maybe RegistryType)
+    , _tsDescription      :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'TypeSummary' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'tsLastUpdated' - When the current default version of the type was registered.
+--
+-- * 'tsTypeName' - The name of the type.
+--
+-- * 'tsDefaultVersionId' - The ID of the default version of the type. The default version is used when the type version is not specified. To set the default version of a type, use @'SetTypeDefaultVersion' @ .
+--
+-- * 'tsTypeARN' - The Amazon Resource Name (ARN) of the type.
+--
+-- * 'tsType' - The kind of type.
+--
+-- * 'tsDescription' - The description of the type.
+typeSummary
+    :: TypeSummary
+typeSummary =
+  TypeSummary'
+    { _tsLastUpdated = Nothing
+    , _tsTypeName = Nothing
+    , _tsDefaultVersionId = Nothing
+    , _tsTypeARN = Nothing
+    , _tsType = Nothing
+    , _tsDescription = Nothing
+    }
+
+
+-- | When the current default version of the type was registered.
+tsLastUpdated :: Lens' TypeSummary (Maybe UTCTime)
+tsLastUpdated = lens _tsLastUpdated (\ s a -> s{_tsLastUpdated = a}) . mapping _Time
+
+-- | The name of the type.
+tsTypeName :: Lens' TypeSummary (Maybe Text)
+tsTypeName = lens _tsTypeName (\ s a -> s{_tsTypeName = a})
+
+-- | The ID of the default version of the type. The default version is used when the type version is not specified. To set the default version of a type, use @'SetTypeDefaultVersion' @ .
+tsDefaultVersionId :: Lens' TypeSummary (Maybe Text)
+tsDefaultVersionId = lens _tsDefaultVersionId (\ s a -> s{_tsDefaultVersionId = a})
+
+-- | The Amazon Resource Name (ARN) of the type.
+tsTypeARN :: Lens' TypeSummary (Maybe Text)
+tsTypeARN = lens _tsTypeARN (\ s a -> s{_tsTypeARN = a})
+
+-- | The kind of type.
+tsType :: Lens' TypeSummary (Maybe RegistryType)
+tsType = lens _tsType (\ s a -> s{_tsType = a})
+
+-- | The description of the type.
+tsDescription :: Lens' TypeSummary (Maybe Text)
+tsDescription = lens _tsDescription (\ s a -> s{_tsDescription = a})
+
+instance FromXML TypeSummary where
+        parseXML x
+          = TypeSummary' <$>
+              (x .@? "LastUpdated") <*> (x .@? "TypeName") <*>
+                (x .@? "DefaultVersionId")
+                <*> (x .@? "TypeArn")
+                <*> (x .@? "Type")
+                <*> (x .@? "Description")
+
+instance Hashable TypeSummary where
+
+instance NFData TypeSummary where
+
+-- | Contains summary information about a specific version of a CloudFormation type.
+--
+--
+--
+-- /See:/ 'typeVersionSummary' smart constructor.
+data TypeVersionSummary =
+  TypeVersionSummary'
+    { _tvsVersionId   :: !(Maybe Text)
+    , _tvsTypeName    :: !(Maybe Text)
+    , _tvsARN         :: !(Maybe Text)
+    , _tvsTimeCreated :: !(Maybe ISO8601)
+    , _tvsType        :: !(Maybe RegistryType)
+    , _tvsDescription :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
+
+
+-- | Creates a value of 'TypeVersionSummary' with the minimum fields required to make a request.
+--
+-- Use one of the following lenses to modify other fields as desired:
+--
+-- * 'tvsVersionId' - The ID of a specific version of the type. The version ID is the value at the end of the Amazon Resource Name (ARN) assigned to the type version when it is registered.
+--
+-- * 'tvsTypeName' - The name of the type.
+--
+-- * 'tvsARN' - The Amazon Resource Name (ARN) of the type version.
+--
+-- * 'tvsTimeCreated' - When the version was registered.
+--
+-- * 'tvsType' - The kind of type.
+--
+-- * 'tvsDescription' - The description of the type version.
+typeVersionSummary
+    :: TypeVersionSummary
+typeVersionSummary =
+  TypeVersionSummary'
+    { _tvsVersionId = Nothing
+    , _tvsTypeName = Nothing
+    , _tvsARN = Nothing
+    , _tvsTimeCreated = Nothing
+    , _tvsType = Nothing
+    , _tvsDescription = Nothing
+    }
+
+
+-- | The ID of a specific version of the type. The version ID is the value at the end of the Amazon Resource Name (ARN) assigned to the type version when it is registered.
+tvsVersionId :: Lens' TypeVersionSummary (Maybe Text)
+tvsVersionId = lens _tvsVersionId (\ s a -> s{_tvsVersionId = a})
+
+-- | The name of the type.
+tvsTypeName :: Lens' TypeVersionSummary (Maybe Text)
+tvsTypeName = lens _tvsTypeName (\ s a -> s{_tvsTypeName = a})
+
+-- | The Amazon Resource Name (ARN) of the type version.
+tvsARN :: Lens' TypeVersionSummary (Maybe Text)
+tvsARN = lens _tvsARN (\ s a -> s{_tvsARN = a})
+
+-- | When the version was registered.
+tvsTimeCreated :: Lens' TypeVersionSummary (Maybe UTCTime)
+tvsTimeCreated = lens _tvsTimeCreated (\ s a -> s{_tvsTimeCreated = a}) . mapping _Time
+
+-- | The kind of type.
+tvsType :: Lens' TypeVersionSummary (Maybe RegistryType)
+tvsType = lens _tvsType (\ s a -> s{_tvsType = a})
+
+-- | The description of the type version.
+tvsDescription :: Lens' TypeVersionSummary (Maybe Text)
+tvsDescription = lens _tvsDescription (\ s a -> s{_tvsDescription = a})
+
+instance FromXML TypeVersionSummary where
+        parseXML x
+          = TypeVersionSummary' <$>
+              (x .@? "VersionId") <*> (x .@? "TypeName") <*>
+                (x .@? "Arn")
+                <*> (x .@? "TimeCreated")
+                <*> (x .@? "Type")
+                <*> (x .@? "Description")
+
+instance Hashable TypeVersionSummary where
+
+instance NFData TypeVersionSummary where

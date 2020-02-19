@@ -50,20 +50,23 @@ instance FromXML AccountGateStatus where
     parseXML = parseXMLText "AccountGateStatus"
 
 data Capability
-  = CapabilityIAM
+  = CapabilityAutoExpand
+  | CapabilityIAM
   | CapabilityNamedIAM
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText Capability where
     parser = takeLowerText >>= \case
+        "capability_auto_expand" -> pure CapabilityAutoExpand
         "capability_iam" -> pure CapabilityIAM
         "capability_named_iam" -> pure CapabilityNamedIAM
         e -> fromTextError $ "Failure parsing Capability from value: '" <> e
-           <> "'. Accepted values: capability_iam, capability_named_iam"
+           <> "'. Accepted values: capability_auto_expand, capability_iam, capability_named_iam"
 
 instance ToText Capability where
     toText = \case
+        CapabilityAutoExpand -> "CAPABILITY_AUTO_EXPAND"
         CapabilityIAM -> "CAPABILITY_IAM"
         CapabilityNamedIAM -> "CAPABILITY_NAMED_IAM"
 
@@ -78,6 +81,7 @@ instance FromXML Capability where
 
 data ChangeAction
   = Add
+  | Import
   | Modify
   | Remove
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
@@ -86,14 +90,16 @@ data ChangeAction
 instance FromText ChangeAction where
     parser = takeLowerText >>= \case
         "add" -> pure Add
+        "import" -> pure Import
         "modify" -> pure Modify
         "remove" -> pure Remove
         e -> fromTextError $ "Failure parsing ChangeAction from value: '" <> e
-           <> "'. Accepted values: add, modify, remove"
+           <> "'. Accepted values: add, import, modify, remove"
 
 instance ToText ChangeAction where
     toText = \case
         Add -> "Add"
+        Import -> "Import"
         Modify -> "Modify"
         Remove -> "Remove"
 
@@ -143,22 +149,25 @@ instance FromXML ChangeSetStatus where
     parseXML = parseXMLText "ChangeSetStatus"
 
 data ChangeSetType
-  = Create
-  | Update
+  = CSTCreate
+  | CSTImport
+  | CSTUpdate
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText ChangeSetType where
     parser = takeLowerText >>= \case
-        "create" -> pure Create
-        "update" -> pure Update
+        "create" -> pure CSTCreate
+        "import" -> pure CSTImport
+        "update" -> pure CSTUpdate
         e -> fromTextError $ "Failure parsing ChangeSetType from value: '" <> e
-           <> "'. Accepted values: create, update"
+           <> "'. Accepted values: create, import, update"
 
 instance ToText ChangeSetType where
     toText = \case
-        Create -> "CREATE"
-        Update -> "UPDATE"
+        CSTCreate -> "CREATE"
+        CSTImport -> "IMPORT"
+        CSTUpdate -> "UPDATE"
 
 instance Hashable     ChangeSetType
 instance NFData       ChangeSetType
@@ -203,19 +212,19 @@ instance FromXML ChangeSource where
     parseXML = parseXMLText "ChangeSource"
 
 data ChangeType =
-  Resource
+  CTResource
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText ChangeType where
     parser = takeLowerText >>= \case
-        "resource" -> pure Resource
+        "resource" -> pure CTResource
         e -> fromTextError $ "Failure parsing ChangeType from value: '" <> e
            <> "'. Accepted values: resource"
 
 instance ToText ChangeType where
     toText = \case
-        Resource -> "Resource"
+        CTResource -> "Resource"
 
 instance Hashable     ChangeType
 instance NFData       ChangeType
@@ -225,6 +234,63 @@ instance ToHeader     ChangeType
 
 instance FromXML ChangeType where
     parseXML = parseXMLText "ChangeType"
+
+data DeprecatedStatus
+  = Deprecated
+  | Live
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText DeprecatedStatus where
+    parser = takeLowerText >>= \case
+        "deprecated" -> pure Deprecated
+        "live" -> pure Live
+        e -> fromTextError $ "Failure parsing DeprecatedStatus from value: '" <> e
+           <> "'. Accepted values: deprecated, live"
+
+instance ToText DeprecatedStatus where
+    toText = \case
+        Deprecated -> "DEPRECATED"
+        Live -> "LIVE"
+
+instance Hashable     DeprecatedStatus
+instance NFData       DeprecatedStatus
+instance ToByteString DeprecatedStatus
+instance ToQuery      DeprecatedStatus
+instance ToHeader     DeprecatedStatus
+
+instance FromXML DeprecatedStatus where
+    parseXML = parseXMLText "DeprecatedStatus"
+
+data DifferenceType
+  = DTAdd
+  | DTNotEqual
+  | DTRemove
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText DifferenceType where
+    parser = takeLowerText >>= \case
+        "add" -> pure DTAdd
+        "not_equal" -> pure DTNotEqual
+        "remove" -> pure DTRemove
+        e -> fromTextError $ "Failure parsing DifferenceType from value: '" <> e
+           <> "'. Accepted values: add, not_equal, remove"
+
+instance ToText DifferenceType where
+    toText = \case
+        DTAdd -> "ADD"
+        DTNotEqual -> "NOT_EQUAL"
+        DTRemove -> "REMOVE"
+
+instance Hashable     DifferenceType
+instance NFData       DifferenceType
+instance ToByteString DifferenceType
+instance ToQuery      DifferenceType
+instance ToHeader     DifferenceType
+
+instance FromXML DifferenceType where
+    parseXML = parseXMLText "DifferenceType"
 
 data EvaluationType
   = Dynamic
@@ -292,32 +358,233 @@ instance ToHeader     ExecutionStatus
 instance FromXML ExecutionStatus where
     parseXML = parseXMLText "ExecutionStatus"
 
+data HandlerErrorCode
+  = AccessDenied
+  | AlreadyExists
+  | GeneralServiceException
+  | InternalFailure
+  | InvalidCredentials
+  | InvalidRequest
+  | NetworkFailure
+  | NotFound
+  | NotStabilized
+  | NotUpdatable
+  | ResourceConflict
+  | ServiceInternalError
+  | ServiceLimitExceeded
+  | Throttling
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText HandlerErrorCode where
+    parser = takeLowerText >>= \case
+        "accessdenied" -> pure AccessDenied
+        "alreadyexists" -> pure AlreadyExists
+        "generalserviceexception" -> pure GeneralServiceException
+        "internalfailure" -> pure InternalFailure
+        "invalidcredentials" -> pure InvalidCredentials
+        "invalidrequest" -> pure InvalidRequest
+        "networkfailure" -> pure NetworkFailure
+        "notfound" -> pure NotFound
+        "notstabilized" -> pure NotStabilized
+        "notupdatable" -> pure NotUpdatable
+        "resourceconflict" -> pure ResourceConflict
+        "serviceinternalerror" -> pure ServiceInternalError
+        "servicelimitexceeded" -> pure ServiceLimitExceeded
+        "throttling" -> pure Throttling
+        e -> fromTextError $ "Failure parsing HandlerErrorCode from value: '" <> e
+           <> "'. Accepted values: accessdenied, alreadyexists, generalserviceexception, internalfailure, invalidcredentials, invalidrequest, networkfailure, notfound, notstabilized, notupdatable, resourceconflict, serviceinternalerror, servicelimitexceeded, throttling"
+
+instance ToText HandlerErrorCode where
+    toText = \case
+        AccessDenied -> "AccessDenied"
+        AlreadyExists -> "AlreadyExists"
+        GeneralServiceException -> "GeneralServiceException"
+        InternalFailure -> "InternalFailure"
+        InvalidCredentials -> "InvalidCredentials"
+        InvalidRequest -> "InvalidRequest"
+        NetworkFailure -> "NetworkFailure"
+        NotFound -> "NotFound"
+        NotStabilized -> "NotStabilized"
+        NotUpdatable -> "NotUpdatable"
+        ResourceConflict -> "ResourceConflict"
+        ServiceInternalError -> "ServiceInternalError"
+        ServiceLimitExceeded -> "ServiceLimitExceeded"
+        Throttling -> "Throttling"
+
+instance Hashable     HandlerErrorCode
+instance NFData       HandlerErrorCode
+instance ToByteString HandlerErrorCode
+instance ToQuery      HandlerErrorCode
+instance ToHeader     HandlerErrorCode
+
 data OnFailure
-  = Delete
-  | DoNothing
-  | Rollback
+  = OFDelete
+  | OFDoNothing
+  | OFRollback
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText OnFailure where
     parser = takeLowerText >>= \case
-        "delete" -> pure Delete
-        "do_nothing" -> pure DoNothing
-        "rollback" -> pure Rollback
+        "delete" -> pure OFDelete
+        "do_nothing" -> pure OFDoNothing
+        "rollback" -> pure OFRollback
         e -> fromTextError $ "Failure parsing OnFailure from value: '" <> e
            <> "'. Accepted values: delete, do_nothing, rollback"
 
 instance ToText OnFailure where
     toText = \case
-        Delete -> "DELETE"
-        DoNothing -> "DO_NOTHING"
-        Rollback -> "ROLLBACK"
+        OFDelete -> "DELETE"
+        OFDoNothing -> "DO_NOTHING"
+        OFRollback -> "ROLLBACK"
 
 instance Hashable     OnFailure
 instance NFData       OnFailure
 instance ToByteString OnFailure
 instance ToQuery      OnFailure
 instance ToHeader     OnFailure
+
+data OperationStatus
+  = OSFailed
+  | OSInProgress
+  | OSPending
+  | OSSuccess
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText OperationStatus where
+    parser = takeLowerText >>= \case
+        "failed" -> pure OSFailed
+        "in_progress" -> pure OSInProgress
+        "pending" -> pure OSPending
+        "success" -> pure OSSuccess
+        e -> fromTextError $ "Failure parsing OperationStatus from value: '" <> e
+           <> "'. Accepted values: failed, in_progress, pending, success"
+
+instance ToText OperationStatus where
+    toText = \case
+        OSFailed -> "FAILED"
+        OSInProgress -> "IN_PROGRESS"
+        OSPending -> "PENDING"
+        OSSuccess -> "SUCCESS"
+
+instance Hashable     OperationStatus
+instance NFData       OperationStatus
+instance ToByteString OperationStatus
+instance ToQuery      OperationStatus
+instance ToHeader     OperationStatus
+
+data PermissionModels
+  = SelfManaged
+  | ServiceManaged
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText PermissionModels where
+    parser = takeLowerText >>= \case
+        "self_managed" -> pure SelfManaged
+        "service_managed" -> pure ServiceManaged
+        e -> fromTextError $ "Failure parsing PermissionModels from value: '" <> e
+           <> "'. Accepted values: self_managed, service_managed"
+
+instance ToText PermissionModels where
+    toText = \case
+        SelfManaged -> "SELF_MANAGED"
+        ServiceManaged -> "SERVICE_MANAGED"
+
+instance Hashable     PermissionModels
+instance NFData       PermissionModels
+instance ToByteString PermissionModels
+instance ToQuery      PermissionModels
+instance ToHeader     PermissionModels
+
+instance FromXML PermissionModels where
+    parseXML = parseXMLText "PermissionModels"
+
+data ProvisioningType
+  = FullyMutable
+  | Immutable
+  | NonProvisionable
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText ProvisioningType where
+    parser = takeLowerText >>= \case
+        "fully_mutable" -> pure FullyMutable
+        "immutable" -> pure Immutable
+        "non_provisionable" -> pure NonProvisionable
+        e -> fromTextError $ "Failure parsing ProvisioningType from value: '" <> e
+           <> "'. Accepted values: fully_mutable, immutable, non_provisionable"
+
+instance ToText ProvisioningType where
+    toText = \case
+        FullyMutable -> "FULLY_MUTABLE"
+        Immutable -> "IMMUTABLE"
+        NonProvisionable -> "NON_PROVISIONABLE"
+
+instance Hashable     ProvisioningType
+instance NFData       ProvisioningType
+instance ToByteString ProvisioningType
+instance ToQuery      ProvisioningType
+instance ToHeader     ProvisioningType
+
+instance FromXML ProvisioningType where
+    parseXML = parseXMLText "ProvisioningType"
+
+data RegistrationStatus
+  = RSComplete
+  | RSFailed
+  | RSInProgress
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText RegistrationStatus where
+    parser = takeLowerText >>= \case
+        "complete" -> pure RSComplete
+        "failed" -> pure RSFailed
+        "in_progress" -> pure RSInProgress
+        e -> fromTextError $ "Failure parsing RegistrationStatus from value: '" <> e
+           <> "'. Accepted values: complete, failed, in_progress"
+
+instance ToText RegistrationStatus where
+    toText = \case
+        RSComplete -> "COMPLETE"
+        RSFailed -> "FAILED"
+        RSInProgress -> "IN_PROGRESS"
+
+instance Hashable     RegistrationStatus
+instance NFData       RegistrationStatus
+instance ToByteString RegistrationStatus
+instance ToQuery      RegistrationStatus
+instance ToHeader     RegistrationStatus
+
+instance FromXML RegistrationStatus where
+    parseXML = parseXMLText "RegistrationStatus"
+
+data RegistryType =
+  Resource
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText RegistryType where
+    parser = takeLowerText >>= \case
+        "resource" -> pure Resource
+        e -> fromTextError $ "Failure parsing RegistryType from value: '" <> e
+           <> "'. Accepted values: resource"
+
+instance ToText RegistryType where
+    toText = \case
+        Resource -> "RESOURCE"
+
+instance Hashable     RegistryType
+instance NFData       RegistryType
+instance ToByteString RegistryType
+instance ToQuery      RegistryType
+instance ToHeader     RegistryType
+
+instance FromXML RegistryType where
+    parseXML = parseXMLText "RegistryType"
 
 data Replacement
   = Conditional
@@ -450,6 +717,12 @@ data ResourceStatus
   | DeleteFailed
   | DeleteInProgress
   | DeleteSkipped
+  | ImportComplete
+  | ImportFailed
+  | ImportInProgress
+  | ImportRollbackComplete
+  | ImportRollbackFailed
+  | ImportRollbackInProgress
   | UpdateComplete
   | UpdateFailed
   | UpdateInProgress
@@ -465,11 +738,17 @@ instance FromText ResourceStatus where
         "delete_failed" -> pure DeleteFailed
         "delete_in_progress" -> pure DeleteInProgress
         "delete_skipped" -> pure DeleteSkipped
+        "import_complete" -> pure ImportComplete
+        "import_failed" -> pure ImportFailed
+        "import_in_progress" -> pure ImportInProgress
+        "import_rollback_complete" -> pure ImportRollbackComplete
+        "import_rollback_failed" -> pure ImportRollbackFailed
+        "import_rollback_in_progress" -> pure ImportRollbackInProgress
         "update_complete" -> pure UpdateComplete
         "update_failed" -> pure UpdateFailed
         "update_in_progress" -> pure UpdateInProgress
         e -> fromTextError $ "Failure parsing ResourceStatus from value: '" <> e
-           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, delete_skipped, update_complete, update_failed, update_in_progress"
+           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, delete_skipped, import_complete, import_failed, import_in_progress, import_rollback_complete, import_rollback_failed, import_rollback_in_progress, update_complete, update_failed, update_in_progress"
 
 instance ToText ResourceStatus where
     toText = \case
@@ -480,6 +759,12 @@ instance ToText ResourceStatus where
         DeleteFailed -> "DELETE_FAILED"
         DeleteInProgress -> "DELETE_IN_PROGRESS"
         DeleteSkipped -> "DELETE_SKIPPED"
+        ImportComplete -> "IMPORT_COMPLETE"
+        ImportFailed -> "IMPORT_FAILED"
+        ImportInProgress -> "IMPORT_IN_PROGRESS"
+        ImportRollbackComplete -> "IMPORT_ROLLBACK_COMPLETE"
+        ImportRollbackFailed -> "IMPORT_ROLLBACK_FAILED"
+        ImportRollbackInProgress -> "IMPORT_ROLLBACK_IN_PROGRESS"
         UpdateComplete -> "UPDATE_COMPLETE"
         UpdateFailed -> "UPDATE_FAILED"
         UpdateInProgress -> "UPDATE_IN_PROGRESS"
@@ -492,6 +777,69 @@ instance ToHeader     ResourceStatus
 
 instance FromXML ResourceStatus where
     parseXML = parseXMLText "ResourceStatus"
+
+data StackDriftDetectionStatus
+  = DetectionComplete
+  | DetectionFailed
+  | DetectionInProgress
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText StackDriftDetectionStatus where
+    parser = takeLowerText >>= \case
+        "detection_complete" -> pure DetectionComplete
+        "detection_failed" -> pure DetectionFailed
+        "detection_in_progress" -> pure DetectionInProgress
+        e -> fromTextError $ "Failure parsing StackDriftDetectionStatus from value: '" <> e
+           <> "'. Accepted values: detection_complete, detection_failed, detection_in_progress"
+
+instance ToText StackDriftDetectionStatus where
+    toText = \case
+        DetectionComplete -> "DETECTION_COMPLETE"
+        DetectionFailed -> "DETECTION_FAILED"
+        DetectionInProgress -> "DETECTION_IN_PROGRESS"
+
+instance Hashable     StackDriftDetectionStatus
+instance NFData       StackDriftDetectionStatus
+instance ToByteString StackDriftDetectionStatus
+instance ToQuery      StackDriftDetectionStatus
+instance ToHeader     StackDriftDetectionStatus
+
+instance FromXML StackDriftDetectionStatus where
+    parseXML = parseXMLText "StackDriftDetectionStatus"
+
+data StackDriftStatus
+  = SDSDrifted
+  | SDSInSync
+  | SDSNotChecked
+  | SDSUnknown
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText StackDriftStatus where
+    parser = takeLowerText >>= \case
+        "drifted" -> pure SDSDrifted
+        "in_sync" -> pure SDSInSync
+        "not_checked" -> pure SDSNotChecked
+        "unknown" -> pure SDSUnknown
+        e -> fromTextError $ "Failure parsing StackDriftStatus from value: '" <> e
+           <> "'. Accepted values: drifted, in_sync, not_checked, unknown"
+
+instance ToText StackDriftStatus where
+    toText = \case
+        SDSDrifted -> "DRIFTED"
+        SDSInSync -> "IN_SYNC"
+        SDSNotChecked -> "NOT_CHECKED"
+        SDSUnknown -> "UNKNOWN"
+
+instance Hashable     StackDriftStatus
+instance NFData       StackDriftStatus
+instance ToByteString StackDriftStatus
+instance ToQuery      StackDriftStatus
+instance ToHeader     StackDriftStatus
+
+instance FromXML StackDriftStatus where
+    parseXML = parseXMLText "StackDriftStatus"
 
 data StackInstanceStatus
   = Current
@@ -523,26 +871,128 @@ instance ToHeader     StackInstanceStatus
 instance FromXML StackInstanceStatus where
     parseXML = parseXMLText "StackInstanceStatus"
 
+data StackResourceDriftStatus
+  = SRDSDeleted
+  | SRDSInSync
+  | SRDSModified
+  | SRDSNotChecked
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText StackResourceDriftStatus where
+    parser = takeLowerText >>= \case
+        "deleted" -> pure SRDSDeleted
+        "in_sync" -> pure SRDSInSync
+        "modified" -> pure SRDSModified
+        "not_checked" -> pure SRDSNotChecked
+        e -> fromTextError $ "Failure parsing StackResourceDriftStatus from value: '" <> e
+           <> "'. Accepted values: deleted, in_sync, modified, not_checked"
+
+instance ToText StackResourceDriftStatus where
+    toText = \case
+        SRDSDeleted -> "DELETED"
+        SRDSInSync -> "IN_SYNC"
+        SRDSModified -> "MODIFIED"
+        SRDSNotChecked -> "NOT_CHECKED"
+
+instance Hashable     StackResourceDriftStatus
+instance NFData       StackResourceDriftStatus
+instance ToByteString StackResourceDriftStatus
+instance ToQuery      StackResourceDriftStatus
+instance ToHeader     StackResourceDriftStatus
+
+instance FromXML StackResourceDriftStatus where
+    parseXML = parseXMLText "StackResourceDriftStatus"
+
+data StackSetDriftDetectionStatus
+  = SSDDSCompleted
+  | SSDDSFailed
+  | SSDDSInProgress
+  | SSDDSPartialSuccess
+  | SSDDSStopped
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText StackSetDriftDetectionStatus where
+    parser = takeLowerText >>= \case
+        "completed" -> pure SSDDSCompleted
+        "failed" -> pure SSDDSFailed
+        "in_progress" -> pure SSDDSInProgress
+        "partial_success" -> pure SSDDSPartialSuccess
+        "stopped" -> pure SSDDSStopped
+        e -> fromTextError $ "Failure parsing StackSetDriftDetectionStatus from value: '" <> e
+           <> "'. Accepted values: completed, failed, in_progress, partial_success, stopped"
+
+instance ToText StackSetDriftDetectionStatus where
+    toText = \case
+        SSDDSCompleted -> "COMPLETED"
+        SSDDSFailed -> "FAILED"
+        SSDDSInProgress -> "IN_PROGRESS"
+        SSDDSPartialSuccess -> "PARTIAL_SUCCESS"
+        SSDDSStopped -> "STOPPED"
+
+instance Hashable     StackSetDriftDetectionStatus
+instance NFData       StackSetDriftDetectionStatus
+instance ToByteString StackSetDriftDetectionStatus
+instance ToQuery      StackSetDriftDetectionStatus
+instance ToHeader     StackSetDriftDetectionStatus
+
+instance FromXML StackSetDriftDetectionStatus where
+    parseXML = parseXMLText "StackSetDriftDetectionStatus"
+
+data StackSetDriftStatus
+  = Drifted
+  | InSync
+  | NotChecked
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText StackSetDriftStatus where
+    parser = takeLowerText >>= \case
+        "drifted" -> pure Drifted
+        "in_sync" -> pure InSync
+        "not_checked" -> pure NotChecked
+        e -> fromTextError $ "Failure parsing StackSetDriftStatus from value: '" <> e
+           <> "'. Accepted values: drifted, in_sync, not_checked"
+
+instance ToText StackSetDriftStatus where
+    toText = \case
+        Drifted -> "DRIFTED"
+        InSync -> "IN_SYNC"
+        NotChecked -> "NOT_CHECKED"
+
+instance Hashable     StackSetDriftStatus
+instance NFData       StackSetDriftStatus
+instance ToByteString StackSetDriftStatus
+instance ToQuery      StackSetDriftStatus
+instance ToHeader     StackSetDriftStatus
+
+instance FromXML StackSetDriftStatus where
+    parseXML = parseXMLText "StackSetDriftStatus"
+
 data StackSetOperationAction
-  = SSOACreate
-  | SSOADelete
-  | SSOAUpdate
+  = Create
+  | Delete
+  | DetectDrift
+  | Update
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
 instance FromText StackSetOperationAction where
     parser = takeLowerText >>= \case
-        "create" -> pure SSOACreate
-        "delete" -> pure SSOADelete
-        "update" -> pure SSOAUpdate
+        "create" -> pure Create
+        "delete" -> pure Delete
+        "detect_drift" -> pure DetectDrift
+        "update" -> pure Update
         e -> fromTextError $ "Failure parsing StackSetOperationAction from value: '" <> e
-           <> "'. Accepted values: create, delete, update"
+           <> "'. Accepted values: create, delete, detect_drift, update"
 
 instance ToText StackSetOperationAction where
     toText = \case
-        SSOACreate -> "CREATE"
-        SSOADelete -> "DELETE"
-        SSOAUpdate -> "UPDATE"
+        Create -> "CREATE"
+        Delete -> "DELETE"
+        DetectDrift -> "DETECT_DRIFT"
+        Update -> "UPDATE"
 
 instance Hashable     StackSetOperationAction
 instance NFData       StackSetOperationAction
@@ -591,6 +1041,7 @@ instance FromXML StackSetOperationResultStatus where
 
 data StackSetOperationStatus
   = SSOSFailed
+  | SSOSQueued
   | SSOSRunning
   | SSOSStopped
   | SSOSStopping
@@ -601,16 +1052,18 @@ data StackSetOperationStatus
 instance FromText StackSetOperationStatus where
     parser = takeLowerText >>= \case
         "failed" -> pure SSOSFailed
+        "queued" -> pure SSOSQueued
         "running" -> pure SSOSRunning
         "stopped" -> pure SSOSStopped
         "stopping" -> pure SSOSStopping
         "succeeded" -> pure SSOSSucceeded
         e -> fromTextError $ "Failure parsing StackSetOperationStatus from value: '" <> e
-           <> "'. Accepted values: failed, running, stopped, stopping, succeeded"
+           <> "'. Accepted values: failed, queued, running, stopped, stopping, succeeded"
 
 instance ToText StackSetOperationStatus where
     toText = \case
         SSOSFailed -> "FAILED"
+        SSOSQueued -> "QUEUED"
         SSOSRunning -> "RUNNING"
         SSOSStopped -> "STOPPED"
         SSOSStopping -> "STOPPING"
@@ -659,6 +1112,11 @@ data StackStatus
   | SSDeleteComplete
   | SSDeleteFailed
   | SSDeleteInProgress
+  | SSImportComplete
+  | SSImportInProgress
+  | SSImportRollbackComplete
+  | SSImportRollbackFailed
+  | SSImportRollbackInProgress
   | SSReviewInProgress
   | SSRollbackComplete
   | SSRollbackFailed
@@ -681,6 +1139,11 @@ instance FromText StackStatus where
         "delete_complete" -> pure SSDeleteComplete
         "delete_failed" -> pure SSDeleteFailed
         "delete_in_progress" -> pure SSDeleteInProgress
+        "import_complete" -> pure SSImportComplete
+        "import_in_progress" -> pure SSImportInProgress
+        "import_rollback_complete" -> pure SSImportRollbackComplete
+        "import_rollback_failed" -> pure SSImportRollbackFailed
+        "import_rollback_in_progress" -> pure SSImportRollbackInProgress
         "review_in_progress" -> pure SSReviewInProgress
         "rollback_complete" -> pure SSRollbackComplete
         "rollback_failed" -> pure SSRollbackFailed
@@ -693,7 +1156,7 @@ instance FromText StackStatus where
         "update_rollback_failed" -> pure SSUpdateRollbackFailed
         "update_rollback_in_progress" -> pure SSUpdateRollbackInProgress
         e -> fromTextError $ "Failure parsing StackStatus from value: '" <> e
-           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, review_in_progress, rollback_complete, rollback_failed, rollback_in_progress, update_complete, update_complete_cleanup_in_progress, update_in_progress, update_rollback_complete, update_rollback_complete_cleanup_in_progress, update_rollback_failed, update_rollback_in_progress"
+           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, import_complete, import_in_progress, import_rollback_complete, import_rollback_failed, import_rollback_in_progress, review_in_progress, rollback_complete, rollback_failed, rollback_in_progress, update_complete, update_complete_cleanup_in_progress, update_in_progress, update_rollback_complete, update_rollback_complete_cleanup_in_progress, update_rollback_failed, update_rollback_in_progress"
 
 instance ToText StackStatus where
     toText = \case
@@ -703,6 +1166,11 @@ instance ToText StackStatus where
         SSDeleteComplete -> "DELETE_COMPLETE"
         SSDeleteFailed -> "DELETE_FAILED"
         SSDeleteInProgress -> "DELETE_IN_PROGRESS"
+        SSImportComplete -> "IMPORT_COMPLETE"
+        SSImportInProgress -> "IMPORT_IN_PROGRESS"
+        SSImportRollbackComplete -> "IMPORT_ROLLBACK_COMPLETE"
+        SSImportRollbackFailed -> "IMPORT_ROLLBACK_FAILED"
+        SSImportRollbackInProgress -> "IMPORT_ROLLBACK_IN_PROGRESS"
         SSReviewInProgress -> "REVIEW_IN_PROGRESS"
         SSRollbackComplete -> "ROLLBACK_COMPLETE"
         SSRollbackFailed -> "ROLLBACK_FAILED"
@@ -750,3 +1218,30 @@ instance ToHeader     TemplateStage
 
 instance FromXML TemplateStage where
     parseXML = parseXMLText "TemplateStage"
+
+data Visibility
+  = Private
+  | Public
+  deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
+
+
+instance FromText Visibility where
+    parser = takeLowerText >>= \case
+        "private" -> pure Private
+        "public" -> pure Public
+        e -> fromTextError $ "Failure parsing Visibility from value: '" <> e
+           <> "'. Accepted values: private, public"
+
+instance ToText Visibility where
+    toText = \case
+        Private -> "PRIVATE"
+        Public -> "PUBLIC"
+
+instance Hashable     Visibility
+instance NFData       Visibility
+instance ToByteString Visibility
+instance ToQuery      Visibility
+instance ToHeader     Visibility
+
+instance FromXML Visibility where
+    parseXML = parseXMLText "Visibility"

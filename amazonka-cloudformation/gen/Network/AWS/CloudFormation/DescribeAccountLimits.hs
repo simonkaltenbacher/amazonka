@@ -18,9 +18,11 @@
 -- Stability   : auto-generated
 -- Portability : non-portable (GHC extensions)
 --
--- Retrieves your account's AWS CloudFormation limits, such as the maximum number of stacks that you can create in your account.
+-- Retrieves your account's AWS CloudFormation limits, such as the maximum number of stacks that you can create in your account. For more information about account limits, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html AWS CloudFormation Limits> in the /AWS CloudFormation User Guide/ .
 --
 --
+--
+-- This operation returns paginated results.
 module Network.AWS.CloudFormation.DescribeAccountLimits
     (
     -- * Creating a Request
@@ -41,6 +43,7 @@ module Network.AWS.CloudFormation.DescribeAccountLimits
 import Network.AWS.CloudFormation.Types
 import Network.AWS.CloudFormation.Types.Product
 import Network.AWS.Lens
+import Network.AWS.Pager
 import Network.AWS.Prelude
 import Network.AWS.Request
 import Network.AWS.Response
@@ -50,9 +53,11 @@ import Network.AWS.Response
 --
 --
 -- /See:/ 'describeAccountLimits' smart constructor.
-newtype DescribeAccountLimits = DescribeAccountLimits'
-  { _dalNextToken :: Maybe Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+newtype DescribeAccountLimits =
+  DescribeAccountLimits'
+    { _dalNextToken :: Maybe Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeAccountLimits' with the minimum fields required to make a request.
@@ -68,6 +73,13 @@ describeAccountLimits = DescribeAccountLimits' {_dalNextToken = Nothing}
 -- | A string that identifies the next page of limits that you want to retrieve.
 dalNextToken :: Lens' DescribeAccountLimits (Maybe Text)
 dalNextToken = lens _dalNextToken (\ s a -> s{_dalNextToken = a})
+
+instance AWSPager DescribeAccountLimits where
+        page rq rs
+          | stop (rs ^. dalrsNextToken) = Nothing
+          | stop (rs ^. dalrsAccountLimits) = Nothing
+          | otherwise =
+            Just $ rq & dalNextToken .~ rs ^. dalrsNextToken
 
 instance AWSRequest DescribeAccountLimits where
         type Rs DescribeAccountLimits =
@@ -104,11 +116,13 @@ instance ToQuery DescribeAccountLimits where
 --
 --
 -- /See:/ 'describeAccountLimitsResponse' smart constructor.
-data DescribeAccountLimitsResponse = DescribeAccountLimitsResponse'
-  { _dalrsNextToken      :: !(Maybe Text)
-  , _dalrsAccountLimits  :: !(Maybe [AccountLimit])
-  , _dalrsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeAccountLimitsResponse =
+  DescribeAccountLimitsResponse'
+    { _dalrsNextToken      :: !(Maybe Text)
+    , _dalrsAccountLimits  :: !(Maybe [AccountLimit])
+    , _dalrsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeAccountLimitsResponse' with the minimum fields required to make a request.

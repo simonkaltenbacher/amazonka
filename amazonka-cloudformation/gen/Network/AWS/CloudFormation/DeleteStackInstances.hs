@@ -27,10 +27,11 @@ module Network.AWS.CloudFormation.DeleteStackInstances
       deleteStackInstances
     , DeleteStackInstances
     -- * Request Lenses
+    , dsiAccounts
     , dsiOperationPreferences
     , dsiOperationId
+    , dsiDeploymentTargets
     , dsiStackSetName
-    , dsiAccounts
     , dsiRegions
     , dsiRetainStacks
 
@@ -50,45 +51,55 @@ import Network.AWS.Request
 import Network.AWS.Response
 
 -- | /See:/ 'deleteStackInstances' smart constructor.
-data DeleteStackInstances = DeleteStackInstances'
-  { _dsiOperationPreferences :: !(Maybe StackSetOperationPreferences)
-  , _dsiOperationId          :: !(Maybe Text)
-  , _dsiStackSetName         :: !Text
-  , _dsiAccounts             :: ![Text]
-  , _dsiRegions              :: ![Text]
-  , _dsiRetainStacks         :: !Bool
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DeleteStackInstances =
+  DeleteStackInstances'
+    { _dsiAccounts             :: !(Maybe [Text])
+    , _dsiOperationPreferences :: !(Maybe StackSetOperationPreferences)
+    , _dsiOperationId          :: !(Maybe Text)
+    , _dsiDeploymentTargets    :: !(Maybe DeploymentTargets)
+    , _dsiStackSetName         :: !Text
+    , _dsiRegions              :: ![Text]
+    , _dsiRetainStacks         :: !Bool
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DeleteStackInstances' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
+-- * 'dsiAccounts' - [Self-managed permissions] The names of the AWS accounts that you want to delete stack instances for. You can specify @Accounts@ or @DeploymentTargets@ , but not both.
+--
 -- * 'dsiOperationPreferences' - Preferences for how AWS CloudFormation performs this stack set operation.
 --
 -- * 'dsiOperationId' - The unique identifier for this stack set operation.  If you don't specify an operation ID, the SDK generates one automatically.  The operation ID also functions as an idempotency token, to ensure that AWS CloudFormation performs the stack set operation only once, even if you retry the request multiple times. You can retry stack set operation requests to ensure that AWS CloudFormation successfully received them. Repeating this stack set operation with a new operation ID retries all stack instances whose status is @OUTDATED@ .
 --
--- * 'dsiStackSetName' - The name or unique ID of the stack set that you want to delete stack instances for.
+-- * 'dsiDeploymentTargets' - [@Service-managed@ permissions] The AWS Organizations accounts from which to delete stack instances. You can specify @Accounts@ or @DeploymentTargets@ , but not both.
 --
--- * 'dsiAccounts' - The names of the AWS accounts that you want to delete stack instances for.
+-- * 'dsiStackSetName' - The name or unique ID of the stack set that you want to delete stack instances for.
 --
 -- * 'dsiRegions' - The regions where you want to delete stack set instances.
 --
--- * 'dsiRetainStacks' - Removes the stack instances from the specified stack set, but doesn't delete the stacks. You can't reassociate a retained stack or add an existing, saved stack to a new stack set. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
+-- * 'dsiRetainStacks' - Removes the stack instances from the specified stack set, but doesn't delete the stacks. You can't reassociate a retained stack or add an existing, saved stack to a new stack set. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
 deleteStackInstances
     :: Text -- ^ 'dsiStackSetName'
     -> Bool -- ^ 'dsiRetainStacks'
     -> DeleteStackInstances
 deleteStackInstances pStackSetName_ pRetainStacks_ =
   DeleteStackInstances'
-    { _dsiOperationPreferences = Nothing
+    { _dsiAccounts = Nothing
+    , _dsiOperationPreferences = Nothing
     , _dsiOperationId = Nothing
+    , _dsiDeploymentTargets = Nothing
     , _dsiStackSetName = pStackSetName_
-    , _dsiAccounts = mempty
     , _dsiRegions = mempty
     , _dsiRetainStacks = pRetainStacks_
     }
 
+
+-- | [Self-managed permissions] The names of the AWS accounts that you want to delete stack instances for. You can specify @Accounts@ or @DeploymentTargets@ , but not both.
+dsiAccounts :: Lens' DeleteStackInstances [Text]
+dsiAccounts = lens _dsiAccounts (\ s a -> s{_dsiAccounts = a}) . _Default . _Coerce
 
 -- | Preferences for how AWS CloudFormation performs this stack set operation.
 dsiOperationPreferences :: Lens' DeleteStackInstances (Maybe StackSetOperationPreferences)
@@ -98,19 +109,19 @@ dsiOperationPreferences = lens _dsiOperationPreferences (\ s a -> s{_dsiOperatio
 dsiOperationId :: Lens' DeleteStackInstances (Maybe Text)
 dsiOperationId = lens _dsiOperationId (\ s a -> s{_dsiOperationId = a})
 
+-- | [@Service-managed@ permissions] The AWS Organizations accounts from which to delete stack instances. You can specify @Accounts@ or @DeploymentTargets@ , but not both.
+dsiDeploymentTargets :: Lens' DeleteStackInstances (Maybe DeploymentTargets)
+dsiDeploymentTargets = lens _dsiDeploymentTargets (\ s a -> s{_dsiDeploymentTargets = a})
+
 -- | The name or unique ID of the stack set that you want to delete stack instances for.
 dsiStackSetName :: Lens' DeleteStackInstances Text
 dsiStackSetName = lens _dsiStackSetName (\ s a -> s{_dsiStackSetName = a})
-
--- | The names of the AWS accounts that you want to delete stack instances for.
-dsiAccounts :: Lens' DeleteStackInstances [Text]
-dsiAccounts = lens _dsiAccounts (\ s a -> s{_dsiAccounts = a}) . _Coerce
 
 -- | The regions where you want to delete stack set instances.
 dsiRegions :: Lens' DeleteStackInstances [Text]
 dsiRegions = lens _dsiRegions (\ s a -> s{_dsiRegions = a}) . _Coerce
 
--- | Removes the stack instances from the specified stack set, but doesn't delete the stacks. You can't reassociate a retained stack or add an existing, saved stack to a new stack set. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
+-- | Removes the stack instances from the specified stack set, but doesn't delete the stacks. You can't reassociate a retained stack or add an existing, saved stack to a new stack set. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stackset-ops-options Stack set operation options> .
 dsiRetainStacks :: Lens' DeleteStackInstances Bool
 dsiRetainStacks = lens _dsiRetainStacks (\ s a -> s{_dsiRetainStacks = a})
 
@@ -139,18 +150,22 @@ instance ToQuery DeleteStackInstances where
           = mconcat
               ["Action" =: ("DeleteStackInstances" :: ByteString),
                "Version" =: ("2010-05-15" :: ByteString),
+               "Accounts" =:
+                 toQuery (toQueryList "member" <$> _dsiAccounts),
                "OperationPreferences" =: _dsiOperationPreferences,
                "OperationId" =: _dsiOperationId,
+               "DeploymentTargets" =: _dsiDeploymentTargets,
                "StackSetName" =: _dsiStackSetName,
-               "Accounts" =: toQueryList "member" _dsiAccounts,
                "Regions" =: toQueryList "member" _dsiRegions,
                "RetainStacks" =: _dsiRetainStacks]
 
 -- | /See:/ 'deleteStackInstancesResponse' smart constructor.
-data DeleteStackInstancesResponse = DeleteStackInstancesResponse'
-  { _dsirsOperationId    :: !(Maybe Text)
-  , _dsirsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DeleteStackInstancesResponse =
+  DeleteStackInstancesResponse'
+    { _dsirsOperationId    :: !(Maybe Text)
+    , _dsirsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DeleteStackInstancesResponse' with the minimum fields required to make a request.

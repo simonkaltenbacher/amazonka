@@ -21,6 +21,8 @@
 -- Returns summary information about stack instances that are associated with the specified stack set. You can filter for stack instances that are associated with a specific AWS account name or region.
 --
 --
+--
+-- This operation returns paginated results.
 module Network.AWS.CloudFormation.ListStackInstances
     (
     -- * Creating a Request
@@ -45,18 +47,21 @@ module Network.AWS.CloudFormation.ListStackInstances
 import Network.AWS.CloudFormation.Types
 import Network.AWS.CloudFormation.Types.Product
 import Network.AWS.Lens
+import Network.AWS.Pager
 import Network.AWS.Prelude
 import Network.AWS.Request
 import Network.AWS.Response
 
 -- | /See:/ 'listStackInstances' smart constructor.
-data ListStackInstances = ListStackInstances'
-  { _lsiStackInstanceRegion  :: !(Maybe Text)
-  , _lsiNextToken            :: !(Maybe Text)
-  , _lsiStackInstanceAccount :: !(Maybe Text)
-  , _lsiMaxResults           :: !(Maybe Nat)
-  , _lsiStackSetName         :: !Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ListStackInstances =
+  ListStackInstances'
+    { _lsiStackInstanceRegion  :: !(Maybe Text)
+    , _lsiNextToken            :: !(Maybe Text)
+    , _lsiStackInstanceAccount :: !(Maybe Text)
+    , _lsiMaxResults           :: !(Maybe Nat)
+    , _lsiStackSetName         :: !Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ListStackInstances' with the minimum fields required to make a request.
@@ -105,6 +110,13 @@ lsiMaxResults = lens _lsiMaxResults (\ s a -> s{_lsiMaxResults = a}) . mapping _
 lsiStackSetName :: Lens' ListStackInstances Text
 lsiStackSetName = lens _lsiStackSetName (\ s a -> s{_lsiStackSetName = a})
 
+instance AWSPager ListStackInstances where
+        page rq rs
+          | stop (rs ^. lsirsNextToken) = Nothing
+          | stop (rs ^. lsirsSummaries) = Nothing
+          | otherwise =
+            Just $ rq & lsiNextToken .~ rs ^. lsirsNextToken
+
 instance AWSRequest ListStackInstances where
         type Rs ListStackInstances =
              ListStackInstancesResponse
@@ -140,11 +152,13 @@ instance ToQuery ListStackInstances where
                "StackSetName" =: _lsiStackSetName]
 
 -- | /See:/ 'listStackInstancesResponse' smart constructor.
-data ListStackInstancesResponse = ListStackInstancesResponse'
-  { _lsirsNextToken      :: !(Maybe Text)
-  , _lsirsSummaries      :: !(Maybe [StackInstanceSummary])
-  , _lsirsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data ListStackInstancesResponse =
+  ListStackInstancesResponse'
+    { _lsirsNextToken      :: !(Maybe Text)
+    , _lsirsSummaries      :: !(Maybe [StackInstanceSummary])
+    , _lsirsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'ListStackInstancesResponse' with the minimum fields required to make a request.

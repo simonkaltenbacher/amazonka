@@ -14,7 +14,8 @@ VERSION        = $(shell sed -n 's/^version: *\(.*\)$$/\1/p' amazonka-gen.cabal)
 CORE_VERSION   = $(call version,$(TOP_DIR)/core/amazonka-core.cabal)
 CLIENT_VERSION = $(call version,$(TOP_DIR)/gen/amazonka-gen.cabal)
 
-MODELS ?= $(sort $(dir $(wildcard $(MODEL_DIR)/*/*)))
+# MODELS ?= $(sort $(dir $(wildcard $(MODEL_DIR)/*/*)))
+MODELS ?= "model/cloudformation"
 
 .PHONY: gen format $(GENERATE)
 
@@ -46,10 +47,10 @@ format: $(STYLISH)
 	-exec sh -c "printf ' -> %s\n' $1 {}; $(STYLISH) -i {}" \;
 
 $(GENERATE): $(BIN_DIR)
-	stack install --nix amazonka-gen
+	stack install amazonka-gen
 
 $(STYLISH): $(BIN_DIR)
-	stack install --nix stylish-haskell
+	stack install stylish-haskell
 
 $(BIN_DIR):
 	mkdir $@

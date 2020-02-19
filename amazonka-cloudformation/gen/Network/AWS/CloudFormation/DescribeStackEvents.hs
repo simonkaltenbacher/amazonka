@@ -18,7 +18,7 @@
 -- Stability   : auto-generated
 -- Portability : non-portable (GHC extensions)
 --
--- Returns all stack related events for a specified stack in reverse chronological order. For more information about a stack's event history, go to <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/concept-stack.html Stacks> in the AWS CloudFormation User Guide.
+-- Returns all stack related events for a specified stack in reverse chronological order. For more information about a stack's event history, go to <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/concept-stack.html Stacks> in the AWS CloudFormation User Guide.
 --
 --
 --
@@ -54,10 +54,12 @@ import Network.AWS.Response
 --
 --
 -- /See:/ 'describeStackEvents' smart constructor.
-data DescribeStackEvents = DescribeStackEvents'
-  { _dseNextToken :: !(Maybe Text)
-  , _dseStackName :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeStackEvents =
+  DescribeStackEvents'
+    { _dseNextToken :: !(Maybe Text)
+    , _dseStackName :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackEvents' with the minimum fields required to make a request.
@@ -124,11 +126,13 @@ instance ToQuery DescribeStackEvents where
 --
 --
 -- /See:/ 'describeStackEventsResponse' smart constructor.
-data DescribeStackEventsResponse = DescribeStackEventsResponse'
-  { _dsersNextToken      :: !(Maybe Text)
-  , _dsersStackEvents    :: !(Maybe [StackEvent])
-  , _dsersResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeStackEventsResponse =
+  DescribeStackEventsResponse'
+    { _dsersNextToken      :: !(Maybe Text)
+    , _dsersStackEvents    :: !(Maybe [StackEvent])
+    , _dsersResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackEventsResponse' with the minimum fields required to make a request.

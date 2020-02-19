@@ -45,6 +45,7 @@ module Network.AWS.CloudFormation.GetTemplateSummary
     , gtsrsCapabilitiesReason
     , gtsrsParameters
     , gtsrsMetadata
+    , gtsrsResourceIdentifierSummaries
     , gtsrsDescription
     , gtsrsCapabilities
     , gtsrsResourceTypes
@@ -63,21 +64,23 @@ import Network.AWS.Response
 --
 --
 -- /See:/ 'getTemplateSummary' smart constructor.
-data GetTemplateSummary = GetTemplateSummary'
-  { _gtsTemplateBody :: !(Maybe Text)
-  , _gtsTemplateURL  :: !(Maybe Text)
-  , _gtsStackSetName :: !(Maybe Text)
-  , _gtsStackName    :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data GetTemplateSummary =
+  GetTemplateSummary'
+    { _gtsTemplateBody :: !(Maybe Text)
+    , _gtsTemplateURL  :: !(Maybe Text)
+    , _gtsStackSetName :: !(Maybe Text)
+    , _gtsStackName    :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'GetTemplateSummary' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'gtsTemplateBody' - Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes. For more information about templates, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
+-- * 'gtsTemplateBody' - Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes. For more information about templates, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
 --
--- * 'gtsTemplateURL' - Location of file containing the template body. The URL must point to a template (max size: 460,800 bytes) that is located in an Amazon S3 bucket. For more information about templates, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
+-- * 'gtsTemplateURL' - Location of file containing the template body. The URL must point to a template (max size: 460,800 bytes) that is located in an Amazon S3 bucket. For more information about templates, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
 --
 -- * 'gtsStackSetName' - The name or unique ID of the stack set from which the stack was created. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
 --
@@ -93,11 +96,11 @@ getTemplateSummary =
     }
 
 
--- | Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes. For more information about templates, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
+-- | Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes. For more information about templates, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
 gtsTemplateBody :: Lens' GetTemplateSummary (Maybe Text)
 gtsTemplateBody = lens _gtsTemplateBody (\ s a -> s{_gtsTemplateBody = a})
 
--- | Location of file containing the template body. The URL must point to a template (max size: 460,800 bytes) that is located in an Amazon S3 bucket. For more information about templates, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
+-- | Location of file containing the template body. The URL must point to a template (max size: 460,800 bytes) that is located in an Amazon S3 bucket. For more information about templates, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html Template Anatomy> in the AWS CloudFormation User Guide. Conditional: You must specify only one of the following parameters: @StackName@ , @StackSetName@ , @TemplateBody@ , or @TemplateURL@ .
 gtsTemplateURL :: Lens' GetTemplateSummary (Maybe Text)
 gtsTemplateURL = lens _gtsTemplateURL (\ s a -> s{_gtsTemplateURL = a})
 
@@ -125,6 +128,9 @@ instance AWSRequest GetTemplateSummary where
                      (x .@? "Parameters" .!@ mempty >>=
                         may (parseXMLList "member"))
                      <*> (x .@? "Metadata")
+                     <*>
+                     (x .@? "ResourceIdentifierSummaries" .!@ mempty >>=
+                        may (parseXMLList "member"))
                      <*> (x .@? "Description")
                      <*>
                      (x .@? "Capabilities" .!@ mempty >>=
@@ -159,17 +165,20 @@ instance ToQuery GetTemplateSummary where
 --
 --
 -- /See:/ 'getTemplateSummaryResponse' smart constructor.
-data GetTemplateSummaryResponse = GetTemplateSummaryResponse'
-  { _gtsrsDeclaredTransforms :: !(Maybe [Text])
-  , _gtsrsVersion            :: !(Maybe Text)
-  , _gtsrsCapabilitiesReason :: !(Maybe Text)
-  , _gtsrsParameters         :: !(Maybe [ParameterDeclaration])
-  , _gtsrsMetadata           :: !(Maybe Text)
-  , _gtsrsDescription        :: !(Maybe Text)
-  , _gtsrsCapabilities       :: !(Maybe [Capability])
-  , _gtsrsResourceTypes      :: !(Maybe [Text])
-  , _gtsrsResponseStatus     :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data GetTemplateSummaryResponse =
+  GetTemplateSummaryResponse'
+    { _gtsrsDeclaredTransforms          :: !(Maybe [Text])
+    , _gtsrsVersion                     :: !(Maybe Text)
+    , _gtsrsCapabilitiesReason          :: !(Maybe Text)
+    , _gtsrsParameters                  :: !(Maybe [ParameterDeclaration])
+    , _gtsrsMetadata                    :: !(Maybe Text)
+    , _gtsrsResourceIdentifierSummaries :: !(Maybe [ResourceIdentifierSummary])
+    , _gtsrsDescription                 :: !(Maybe Text)
+    , _gtsrsCapabilities                :: !(Maybe [Capability])
+    , _gtsrsResourceTypes               :: !(Maybe [Text])
+    , _gtsrsResponseStatus              :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'GetTemplateSummaryResponse' with the minimum fields required to make a request.
@@ -186,9 +195,11 @@ data GetTemplateSummaryResponse = GetTemplateSummaryResponse'
 --
 -- * 'gtsrsMetadata' - The value that is defined for the @Metadata@ property of the template.
 --
+-- * 'gtsrsResourceIdentifierSummaries' - A list of resource identifier summaries that describe the target resources of an import operation and the properties you can provide during the import to identify the target resources. For example, @BucketName@ is a possible identifier property for an @AWS::S3::Bucket@ resource.
+--
 -- * 'gtsrsDescription' - The value that is defined in the @Description@ property of the template.
 --
--- * 'gtsrsCapabilities' - The capabilities found within the template. If your template contains IAM resources, you must specify the CAPABILITY_IAM or CAPABILITY_NAMED_IAM value for this parameter when you use the 'CreateStack' or 'UpdateStack' actions with your template; otherwise, those actions return an InsufficientCapabilities error. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates> .
+-- * 'gtsrsCapabilities' - The capabilities found within the template. If your template contains IAM resources, you must specify the CAPABILITY_IAM or CAPABILITY_NAMED_IAM value for this parameter when you use the 'CreateStack' or 'UpdateStack' actions with your template; otherwise, those actions return an InsufficientCapabilities error. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates> .
 --
 -- * 'gtsrsResourceTypes' - A list of all the template resource types that are defined in the template, such as @AWS::EC2::Instance@ , @AWS::Dynamo::Table@ , and @Custom::MyCustomInstance@ .
 --
@@ -203,6 +214,7 @@ getTemplateSummaryResponse pResponseStatus_ =
     , _gtsrsCapabilitiesReason = Nothing
     , _gtsrsParameters = Nothing
     , _gtsrsMetadata = Nothing
+    , _gtsrsResourceIdentifierSummaries = Nothing
     , _gtsrsDescription = Nothing
     , _gtsrsCapabilities = Nothing
     , _gtsrsResourceTypes = Nothing
@@ -230,11 +242,15 @@ gtsrsParameters = lens _gtsrsParameters (\ s a -> s{_gtsrsParameters = a}) . _De
 gtsrsMetadata :: Lens' GetTemplateSummaryResponse (Maybe Text)
 gtsrsMetadata = lens _gtsrsMetadata (\ s a -> s{_gtsrsMetadata = a})
 
+-- | A list of resource identifier summaries that describe the target resources of an import operation and the properties you can provide during the import to identify the target resources. For example, @BucketName@ is a possible identifier property for an @AWS::S3::Bucket@ resource.
+gtsrsResourceIdentifierSummaries :: Lens' GetTemplateSummaryResponse [ResourceIdentifierSummary]
+gtsrsResourceIdentifierSummaries = lens _gtsrsResourceIdentifierSummaries (\ s a -> s{_gtsrsResourceIdentifierSummaries = a}) . _Default . _Coerce
+
 -- | The value that is defined in the @Description@ property of the template.
 gtsrsDescription :: Lens' GetTemplateSummaryResponse (Maybe Text)
 gtsrsDescription = lens _gtsrsDescription (\ s a -> s{_gtsrsDescription = a})
 
--- | The capabilities found within the template. If your template contains IAM resources, you must specify the CAPABILITY_IAM or CAPABILITY_NAMED_IAM value for this parameter when you use the 'CreateStack' or 'UpdateStack' actions with your template; otherwise, those actions return an InsufficientCapabilities error. For more information, see <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates> .
+-- | The capabilities found within the template. If your template contains IAM resources, you must specify the CAPABILITY_IAM or CAPABILITY_NAMED_IAM value for this parameter when you use the 'CreateStack' or 'UpdateStack' actions with your template; otherwise, those actions return an InsufficientCapabilities error. For more information, see <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#capabilities Acknowledging IAM Resources in AWS CloudFormation Templates> .
 gtsrsCapabilities :: Lens' GetTemplateSummaryResponse [Capability]
 gtsrsCapabilities = lens _gtsrsCapabilities (\ s a -> s{_gtsrsCapabilities = a}) . _Default . _Coerce
 

@@ -55,15 +55,23 @@ library
         , Network.AWS.CloudFormation.DeleteStack
         , Network.AWS.CloudFormation.DeleteStackInstances
         , Network.AWS.CloudFormation.DeleteStackSet
+        , Network.AWS.CloudFormation.DeregisterType
         , Network.AWS.CloudFormation.DescribeAccountLimits
         , Network.AWS.CloudFormation.DescribeChangeSet
+        , Network.AWS.CloudFormation.DescribeStackDriftDetectionStatus
         , Network.AWS.CloudFormation.DescribeStackEvents
         , Network.AWS.CloudFormation.DescribeStackInstance
         , Network.AWS.CloudFormation.DescribeStackResource
+        , Network.AWS.CloudFormation.DescribeStackResourceDrifts
         , Network.AWS.CloudFormation.DescribeStackResources
         , Network.AWS.CloudFormation.DescribeStackSet
         , Network.AWS.CloudFormation.DescribeStackSetOperation
         , Network.AWS.CloudFormation.DescribeStacks
+        , Network.AWS.CloudFormation.DescribeType
+        , Network.AWS.CloudFormation.DescribeTypeRegistration
+        , Network.AWS.CloudFormation.DetectStackDrift
+        , Network.AWS.CloudFormation.DetectStackResourceDrift
+        , Network.AWS.CloudFormation.DetectStackSetDrift
         , Network.AWS.CloudFormation.EstimateTemplateCost
         , Network.AWS.CloudFormation.ExecuteChangeSet
         , Network.AWS.CloudFormation.GetStackPolicy
@@ -78,7 +86,13 @@ library
         , Network.AWS.CloudFormation.ListStackSetOperations
         , Network.AWS.CloudFormation.ListStackSets
         , Network.AWS.CloudFormation.ListStacks
+        , Network.AWS.CloudFormation.ListTypeRegistrations
+        , Network.AWS.CloudFormation.ListTypeVersions
+        , Network.AWS.CloudFormation.ListTypes
+        , Network.AWS.CloudFormation.RecordHandlerProgress
+        , Network.AWS.CloudFormation.RegisterType
         , Network.AWS.CloudFormation.SetStackPolicy
+        , Network.AWS.CloudFormation.SetTypeDefaultVersion
         , Network.AWS.CloudFormation.SignalResource
         , Network.AWS.CloudFormation.StopStackSetOperation
         , Network.AWS.CloudFormation.Types

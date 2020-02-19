@@ -33,8 +33,8 @@ module Network.AWS.CloudFormation.DescribeStackSet
     , describeStackSetResponse
     , DescribeStackSetResponse
     -- * Response Lenses
-    , drsStackSet
-    , drsResponseStatus
+    , desrsStackSet
+    , desrsResponseStatus
     ) where
 
 import Network.AWS.CloudFormation.Types
@@ -45,9 +45,11 @@ import Network.AWS.Request
 import Network.AWS.Response
 
 -- | /See:/ 'describeStackSet' smart constructor.
-newtype DescribeStackSet = DescribeStackSet'
-  { _desStackSetName :: Text
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+newtype DescribeStackSet =
+  DescribeStackSet'
+    { _desStackSetName :: Text
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackSet' with the minimum fields required to make a request.
@@ -93,33 +95,35 @@ instance ToQuery DescribeStackSet where
                "StackSetName" =: _desStackSetName]
 
 -- | /See:/ 'describeStackSetResponse' smart constructor.
-data DescribeStackSetResponse = DescribeStackSetResponse'
-  { _drsStackSet       :: !(Maybe StackSet)
-  , _drsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeStackSetResponse =
+  DescribeStackSetResponse'
+    { _desrsStackSet       :: !(Maybe StackSet)
+    , _desrsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackSetResponse' with the minimum fields required to make a request.
 --
 -- Use one of the following lenses to modify other fields as desired:
 --
--- * 'drsStackSet' - The specified stack set.
+-- * 'desrsStackSet' - The specified stack set.
 --
--- * 'drsResponseStatus' - -- | The response status code.
+-- * 'desrsResponseStatus' - -- | The response status code.
 describeStackSetResponse
-    :: Int -- ^ 'drsResponseStatus'
+    :: Int -- ^ 'desrsResponseStatus'
     -> DescribeStackSetResponse
 describeStackSetResponse pResponseStatus_ =
   DescribeStackSetResponse'
-    {_drsStackSet = Nothing, _drsResponseStatus = pResponseStatus_}
+    {_desrsStackSet = Nothing, _desrsResponseStatus = pResponseStatus_}
 
 
 -- | The specified stack set.
-drsStackSet :: Lens' DescribeStackSetResponse (Maybe StackSet)
-drsStackSet = lens _drsStackSet (\ s a -> s{_drsStackSet = a})
+desrsStackSet :: Lens' DescribeStackSetResponse (Maybe StackSet)
+desrsStackSet = lens _desrsStackSet (\ s a -> s{_desrsStackSet = a})
 
 -- | -- | The response status code.
-drsResponseStatus :: Lens' DescribeStackSetResponse Int
-drsResponseStatus = lens _drsResponseStatus (\ s a -> s{_drsResponseStatus = a})
+desrsResponseStatus :: Lens' DescribeStackSetResponse Int
+desrsResponseStatus = lens _desrsResponseStatus (\ s a -> s{_desrsResponseStatus = a})
 
 instance NFData DescribeStackSetResponse where

@@ -23,7 +23,7 @@
 --
 -- For deleted stacks, @DescribeStackResources@ returns resource information for up to 90 days after the stack has been deleted.
 --
--- You must specify either @StackName@ or @PhysicalResourceId@ , but not both. In addition, you can specify @LogicalResourceId@ to filter the returned result. For more information about resources, the @LogicalResourceId@ and @PhysicalResourceId@ , go to the <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/ AWS CloudFormation User Guide> .
+-- You must specify either @StackName@ or @PhysicalResourceId@ , but not both. In addition, you can specify @LogicalResourceId@ to filter the returned result. For more information about resources, the @LogicalResourceId@ and @PhysicalResourceId@ , go to the <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/ AWS CloudFormation User Guide> .
 --
 module Network.AWS.CloudFormation.DescribeStackResources
     (
@@ -55,11 +55,13 @@ import Network.AWS.Response
 --
 --
 -- /See:/ 'describeStackResources' smart constructor.
-data DescribeStackResources = DescribeStackResources'
-  { _dsrLogicalResourceId  :: !(Maybe Text)
-  , _dsrPhysicalResourceId :: !(Maybe Text)
-  , _dsrStackName          :: !(Maybe Text)
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeStackResources =
+  DescribeStackResources'
+    { _dsrLogicalResourceId  :: !(Maybe Text)
+    , _dsrPhysicalResourceId :: !(Maybe Text)
+    , _dsrStackName          :: !(Maybe Text)
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackResources' with the minimum fields required to make a request.
@@ -130,10 +132,12 @@ instance ToQuery DescribeStackResources where
 --
 --
 -- /See:/ 'describeStackResourcesResponse' smart constructor.
-data DescribeStackResourcesResponse = DescribeStackResourcesResponse'
-  { _dsrsrsStackResources :: !(Maybe [StackResource])
-  , _dsrsrsResponseStatus :: !Int
-  } deriving (Eq, Read, Show, Data, Typeable, Generic)
+data DescribeStackResourcesResponse =
+  DescribeStackResourcesResponse'
+    { _dsrsrsStackResources :: !(Maybe [StackResource])
+    , _dsrsrsResponseStatus :: !Int
+    }
+  deriving (Eq, Read, Show, Data, Typeable, Generic)
 
 
 -- | Creates a value of 'DescribeStackResourcesResponse' with the minimum fields required to make a request.
