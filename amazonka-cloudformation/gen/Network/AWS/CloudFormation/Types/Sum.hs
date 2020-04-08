@@ -726,6 +726,7 @@ data ResourceStatus
   | UpdateComplete
   | UpdateFailed
   | UpdateInProgress
+  | UpdateRollbackComplete
   deriving (Eq, Ord, Read, Show, Enum, Bounded, Data, Typeable, Generic)
 
 
@@ -747,8 +748,9 @@ instance FromText ResourceStatus where
         "update_complete" -> pure UpdateComplete
         "update_failed" -> pure UpdateFailed
         "update_in_progress" -> pure UpdateInProgress
+        "update_rollback_complete" -> pure UpdateRollbackComplete
         e -> fromTextError $ "Failure parsing ResourceStatus from value: '" <> e
-           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, delete_skipped, import_complete, import_failed, import_in_progress, import_rollback_complete, import_rollback_failed, import_rollback_in_progress, update_complete, update_failed, update_in_progress"
+           <> "'. Accepted values: create_complete, create_failed, create_in_progress, delete_complete, delete_failed, delete_in_progress, delete_skipped, import_complete, import_failed, import_in_progress, import_rollback_complete, import_rollback_failed, import_rollback_in_progress, update_complete, update_failed, update_in_progress, update_rollback_complete"
 
 instance ToText ResourceStatus where
     toText = \case
@@ -768,6 +770,7 @@ instance ToText ResourceStatus where
         UpdateComplete -> "UPDATE_COMPLETE"
         UpdateFailed -> "UPDATE_FAILED"
         UpdateInProgress -> "UPDATE_IN_PROGRESS"
+        UpdateRollbackComplete -> "UPDATE_ROLLBACK_COMPLETE"
 
 instance Hashable     ResourceStatus
 instance NFData       ResourceStatus
