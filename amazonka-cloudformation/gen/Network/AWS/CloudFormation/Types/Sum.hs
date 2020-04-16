@@ -723,6 +723,7 @@ data ResourceStatus
   | ImportRollbackComplete
   | ImportRollbackFailed
   | ImportRollbackInProgress
+  | RollbackComplete
   | UpdateComplete
   | UpdateFailed
   | UpdateInProgress
@@ -747,6 +748,7 @@ instance FromText ResourceStatus where
         "import_rollback_complete" -> pure ImportRollbackComplete
         "import_rollback_failed" -> pure ImportRollbackFailed
         "import_rollback_in_progress" -> pure ImportRollbackInProgress
+        "rollback_complete" -> pure RollbackComplete
         "update_complete" -> pure UpdateComplete
         "update_failed" -> pure UpdateFailed
         "update_in_progress" -> pure UpdateInProgress
@@ -771,6 +773,7 @@ instance ToText ResourceStatus where
         ImportRollbackComplete -> "IMPORT_ROLLBACK_COMPLETE"
         ImportRollbackFailed -> "IMPORT_ROLLBACK_FAILED"
         ImportRollbackInProgress -> "IMPORT_ROLLBACK_IN_PROGRESS"
+        RollbackComplete -> "ROLLBACK_COMPLETE"
         UpdateComplete -> "UPDATE_COMPLETE"
         UpdateFailed -> "UPDATE_FAILED"
         UpdateInProgress -> "UPDATE_IN_PROGRESS"
